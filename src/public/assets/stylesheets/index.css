@@ -1,9 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap');
+
+:root {
+  /* COLORS */
+  --primary-dark: #171717;
+  --primary-medium: #636363;
+  --primary-light: #b0b0b0;
+
+  --pure-white: #fff;
+
+  /* TYPOGRAPHY */
+  --h1-size: 2rem;
+  --h2-size: 1.5rem;
+  --h3-size: 1rem;
+  --body-size: 1rem;
+  --small-size: 14px;
+}
 /* -------------------  MOBILE  --------------------- */
 
 body {
   display: flex;
   flex-direction: column;
-  font-family: Arial;
+  font-family: 'Source Sans Pro', sans-serif;
   min-height: 100vh;
 }
 
