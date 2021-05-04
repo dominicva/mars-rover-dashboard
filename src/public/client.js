@@ -1,5 +1,6 @@
 let store = {
   user: { name: 'Student' },
+  title: 'Mars Rover Dashboard',
   apod: '',
   rovers: ['Curiosity', 'Opportunity', 'Spirit'],
 };
@@ -16,14 +17,17 @@ const render = async (root, state) => {
   root.innerHTML = App(state);
 };
 
+const MainHeading = (className, text) =>
+  `<h1 class="${className}">${text}</h1>`;
+
 // create content
 const App = (state) => {
-  let { rovers, apod } = state;
+  let { rovers, title, apod } = state;
 
   return `
       <header></header>
       <main>
-          ${Greeting(store.user.name)}
+         ${MainHeading('main-heading', title)}
           <section>
               <h3>Put things on the page!</h3>
               <p>Here is an example section.</p>
