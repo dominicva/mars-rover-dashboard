@@ -3,6 +3,7 @@ let store = {
   title: 'Mars Rover Dashboard',
   apod: '',
   rovers: ['Curiosity', 'Opportunity', 'Spirit'],
+  currentRover: 'Curiosity',
 };
 
 // add our markup to the page
@@ -32,6 +33,30 @@ const Nav = (className, ...rovers) => {
   return output;
 };
 
+const CardBgImage = (rover) => {
+  return `
+    <div 
+      style="background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');" 
+      class="card__bg-image"></div>
+    `;
+};
+
+const ExpandGalleryBtn = (x) => {};
+
+const CardInfo = (state) => {};
+
+const RoverCard = (className, rover) => {
+  const html = `
+    <div class="${className}">
+     ${CardBgImage(rover)}
+
+
+      
+    </div>`;
+
+  return html;
+};
+
 // create content
 const App = (state) => {
   let { title, apod, rovers } = state;
@@ -39,6 +64,7 @@ const App = (state) => {
   return `
         ${MainHeading('main-heading', title)}
         ${Nav('nav-container', ...rovers)}
+        ${CardBgImage(store.rovers[0])}
         
   `;
 };
