@@ -21,6 +21,8 @@ body {
   display: flex;
   flex-direction: column;
   font-family: 'Source Sans Pro', sans-serif;
+  background-color: var(--primary-dark);
+  color: var(--pure-white);
   min-height: 100vh;
 }
 
@@ -31,6 +33,24 @@ header {
 main {
   flex: 1;
   padding: 20px;
+}
+
+.main-heading {
+  margin: 1rem 0 2rem 0;
+  max-width: 16rem;
+}
+
+.nav-container ul {
+  display: flex;
+  justify-content: space-around;
+}
+
+.nav-item {
+  padding: 1rem;
+  width: calc(100% / 3);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.25px;
 }
 
 footer {

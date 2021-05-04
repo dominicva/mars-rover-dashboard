@@ -39,7 +39,11 @@ const App = (state) => {
   return `
         ${MainHeading('main-heading', title)}
         ${Nav('nav-container', ...rovers)}
-        <section>
+        
+  `;
+};
+// {
+/* <section>
             <h3>Put things on the page!</h3>
             <p>Here is an example section.</p>
             <p>
@@ -52,9 +56,8 @@ const App = (state) => {
             </p>
             ${ImageOfTheDay(apod)}
         </section>
-      <footer></footer>
-  `;
-};
+      <footer></footer> */
+// }
 
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
