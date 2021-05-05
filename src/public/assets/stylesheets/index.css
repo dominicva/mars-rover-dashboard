@@ -40,10 +40,13 @@ main {
   max-width: 16rem;
 }
 
+.nav-container {
+  margin-bottom: 2.5rem;
+}
+
 .nav-container ul {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 2.5rem;
 }
 
 .nav-item {

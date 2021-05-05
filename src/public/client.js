@@ -1,5 +1,7 @@
 'use strict';
 
+const { List } = Immutable;
+
 // TODO: refactor store to use Immutable
 let store = {
   user: { name: 'Student' },
@@ -35,8 +37,7 @@ const App = (state) => {
     ClearLoading(),
     MainHeading('main-heading', title),
     Nav('nav-container', ...rovers),
-    CardBgImage('card__bg-image', store.rovers[0]),
-    ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
+    Card('card', store.rovers[0]),
   ];
 };
 
@@ -85,6 +86,7 @@ const ExpandGalleryBtn = (className, text, handler) => {
   btn.prepend(icon);
 
   // add click listener with launchGallery as callback
+  btn.addEventListener('click', (e) => handler(e));
 
   return btn;
 };
@@ -96,13 +98,19 @@ const CardInfo = function (state) {
   // NB refactor currentRover in store to be Immutable object
 };
 
-const RoverCard = function (className, rover) {
-  const html = `
-    <div class="${className}">
-     ${CardBgImage(rover)}
-    </div>`;
+const Card = function (className, rover) {
+  const card = Component('div', className);
 
-  return html;
+  const children = List([
+    CardBgImage('card__bg-image', rover),
+    ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
+    // CardInfo(rover),
+  ]);
+
+  return children.reduce((card, currChild) => {
+    card.append(currChild);
+    return card;
+  }, card);
 };
 
 // Example of a pure function that renders infomation requested from the backend
