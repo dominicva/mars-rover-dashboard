@@ -1,7 +1,5 @@
 'use strict';
 
-// const Immutable = require('immutable');
-
 // TODO: refactor store to use Immutable
 let store = {
   user: { name: 'Student' },
