@@ -1,26 +1,29 @@
 'use strict';
 
-const { List } = Immutable;
+const { List, Map, toJS } = Immutable;
 
-// TODO: refactor store to use Immutable
-let store = {
-  user: { name: 'Student' },
+let store = Map({
   title: 'Mars Rover Dashboard',
   apod: '',
-  rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-  currentRover: 'Curiosity',
-};
+  rovers: List(['Curiosity', 'Opportunity', 'Spirit']),
+  currentRover: Map({
+    name: 'Curiosity',
+    landingDate: undefined,
+    launchDate: undefined,
+    status: undefined,
+    lastPhotoDate: undefined,
+  }),
+});
 
 // add our markup to the page
 const root = document.getElementById('root');
 
-const updateStore = (store, newState) => {
-  store = Object.assign(store, newState);
+const updateStore = (state, newState) => {
+  store = state.merge(newState);
   render(root, store);
 };
 
 const render = async (root, state) => {
-  // root.innerHTML = App(state);
   const app = App(state);
 
   return app.reduce((root, component) => {
@@ -31,13 +34,13 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-  let { title, apod, rovers } = state;
+  const { title, apod, rovers, currentRover } = state.toJS();
 
   return List([
     ClearLoading(),
     MainHeading('main-heading', title),
     Nav('nav-container', ...rovers),
-    Card('card', store.rovers[0]),
+    Card('card', currentRover.name),
   ]);
 };
 
@@ -95,18 +98,21 @@ const CardInfo = (state) => {
   // TODO:
   // make request for rover info from backend (CALL TO getRoverInfo)
   const info = getRoverInfo(state);
+  // info.then((res) => console.log(res));
 
   // update the store accordingly
   // NB refactor currentRover in store to be Immutable object
 };
 
-const Card = (className, rover) => {
+const Card = async (className, rover) => {
   const card = Component('div', className);
+
+  const cardInfo = await CardInfo(rover);
 
   const children = List([
     CardBgImage('card__bg-image', rover),
     ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
-    // CardInfo(rover),
+    cardInfo,
   ]);
 
   return children.reduce((card, currChild) => {
@@ -165,11 +171,16 @@ const getRoverInfo = function (state) {
   const reqRoute = `http://localhost:3000/rover-info/${currentRover}`;
 
   fetch(reqRoute)
-    .then((res) => res.json())
-    .then((roverInfo) => updateStore(store, { roverInfo }));
+    .then((raw) => raw.json())
+    .then((parsed) => Map(parsed))
+    .then((roverInfo) => updateStore(store, roverInfo));
 };
 
-getRoverInfo(store);
+// getRoverInfo(store);
+
+// setTimeout(() => {
+//   console.log(store);
+// }, 1000);
 
 // ------------------------------------------------------  LEGACY TO BE ULTIMAT ELY REMOVED
 
