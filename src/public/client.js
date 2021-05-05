@@ -18,45 +18,6 @@ const render = async (root, state) => {
   root.innerHTML = App(state);
 };
 
-const MainHeading = (className, text) =>
-  `<h1 class="${className}">${text}</h1>`;
-
-const NavItem = (className, rover) => `<li class="${className}">${rover}</li>`;
-
-const Nav = (className, ...rovers) => {
-  let output = `<nav class="${className}"><ul>`;
-
-  rovers.forEach((rover) => (output += NavItem('nav-item', rover)));
-
-  output += `</ul></nav>`;
-
-  return output;
-};
-
-const CardBgImage = (rover) => {
-  return `
-    <div 
-      style="background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');" 
-      class="card__bg-image"></div>
-    `;
-};
-
-const ExpandGalleryBtn = (x) => {};
-
-const CardInfo = (state) => {};
-
-const RoverCard = (className, rover) => {
-  const html = `
-    <div class="${className}">
-     ${CardBgImage(rover)}
-
-
-      
-    </div>`;
-
-  return html;
-};
-
 // create content
 const App = (state) => {
   let { title, apod, rovers } = state;
@@ -103,6 +64,42 @@ const Greeting = (name) => {
   return `
       <h1>Hello!</h1>
   `;
+};
+
+const MainHeading = (className, text) =>
+  `<h1 class="${className}">${text}</h1>`;
+
+const NavItem = (className, rover) => `<li class="${className}">${rover}</li>`;
+
+const Nav = (className, ...rovers) => {
+  let output = `<nav class="${className}"><ul>`;
+
+  rovers.forEach((rover) => (output += NavItem('nav-item', rover)));
+
+  output += `</ul></nav>`;
+
+  return output;
+};
+
+const CardBgImage = (rover) => {
+  return `
+    <div 
+      style="background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');" 
+      class="card__bg-image"></div>
+    `;
+};
+
+const ExpandGalleryBtn = (x) => {};
+
+const CardInfo = (state) => {};
+
+const RoverCard = (className, rover) => {
+  const html = `
+    <div class="${className}">
+     ${CardBgImage(rover)}
+    </div>`;
+
+  return html;
 };
 
 // Example of a pure function that renders infomation requested from the backend

@@ -52,6 +52,17 @@ main {
   text-align: center;
   font-weight: 600;
   letter-spacing: 0.25px;
+  border-bottom: transparent;
+  transition: border-bottom 0.25s ease-out;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  border-bottom: 1px solid var(--pure-white);
+}
+
+.selected {
+  border-bottom: 1px solid var(--pure-white);
 }
 
 .card__bg-image {
