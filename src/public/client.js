@@ -1,30 +1,29 @@
 'use strict';
-
-const { List, Map, toJS } = Immutable;
-
-let store = Map({
+// const { List, Map, toJS } = Immutable;
+let store = {
   title: 'Mars Rover Dashboard',
   apod: '',
-  rovers: List(['Curiosity', 'Opportunity', 'Spirit']),
-  currentRover: Map({
+  rovers: ['Curiosity', 'Opportunity', 'Spirit'],
+  currentRover: {
     name: 'Curiosity',
     landingDate: undefined,
     launchDate: undefined,
     status: undefined,
     lastPhotoDate: undefined,
-  }),
-});
+  },
+};
 
-// add our markup to the page
 const root = document.getElementById('root');
 
-const updateStore = (state, newState) => {
-  store = state.merge(newState);
+const updateStore = (store, newState) => {
+  store = Object.assign(store, newState);
   render(root, store);
 };
 
 const render = async (root, state) => {
-  const app = App(state);
+  const app = await App(state);
+
+  clearLoading();
 
   return app.reduce((root, component) => {
     root.append(component);
@@ -32,22 +31,23 @@ const render = async (root, state) => {
   }, root);
 };
 
-// create content
-const App = (state) => {
-  const { title, apod, rovers, currentRover } = state.toJS();
+const App = async (state) => {
+  const { title, apod, rovers, currentRover } = state;
 
-  return List([
-    ClearLoading(),
+  return [
     MainHeading('main-heading', title),
     Nav('nav-container', ...rovers),
-    Card('card', currentRover.name),
-  ]);
+    await Card('card', currentRover.name),
+  ];
 };
 
-// listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
   render(root, store);
 });
+
+// ------------------------------------------------------  UTILS
+
+const clearLoading = () => (root.innerHTML = '');
 
 // ------------------------------------------------------  COMPONENTS
 
@@ -55,11 +55,8 @@ const Component = (tag, className, text) => {
   const domEl = document.createElement(tag);
   if (className) domEl.className = className;
   if (text) domEl.textContent = text;
-
   return domEl;
 };
-
-const ClearLoading = () => (root.innerHTML = '');
 
 const MainHeading = (className, text) => Component('h1', className, text);
 
@@ -69,9 +66,7 @@ const Nav = (className, ...rovers) => {
   const nav = Component('nav', className);
   const navList = Component('ul');
   nav.append(navList);
-
   rovers.forEach((rover) => navList.append(NavItem('nav-item', rover)));
-
   return nav;
 };
 
@@ -82,26 +77,39 @@ const CardBgImage = (className, rover) => {
 };
 
 const ExpandGalleryBtn = (className, text, handler) => {
-  // TODO:
-  // component for expand gallery button
   const btn = Component('button', className, text);
   const icon = Component('i', 'material-icons', 'add');
   btn.prepend(icon);
-
-  // add click listener with launchGallery as callback
   btn.addEventListener('click', (e) => handler(e));
-
   return btn;
 };
 
-const CardInfo = (state) => {
-  // TODO:
-  // make request for rover info from backend (CALL TO getRoverInfo)
-  const info = getRoverInfo(state);
-  // info.then((res) => console.log(res));
+const CardInfo = async (rover) => {
+  // const {
+  //   name,
+  //   launchDate,
+  //   landingDate,
+  //   status,
+  //   lastPhotoDate,
+  // } = await getRoverInfo(rover);
+  const info = await getRoverInfo(rover);
+  const { name, launchDate, landingDate, status, lastPhotoDate } = info;
+  // updateStore(store.currentRover, info);
+  // console.log(store);
 
-  // update the store accordingly
-  // NB refactor currentRover in store to be Immutable object
+  const cardInfo = Component('div', 'card__info');
+
+  const roverTitle = Component('h2', 'card__info-heading', name);
+  const statsContainer = Component('ul', 'card__stats-container');
+
+  [launchDate, landingDate, status, lastPhotoDate]
+    .map((stat) => Component('li', 'card__stat', stat))
+    .forEach((el) => statsContainer.append(el));
+
+  cardInfo.append(roverTitle);
+  cardInfo.append(statsContainer);
+
+  return cardInfo;
 };
 
 const Card = async (className, rover) => {
@@ -109,11 +117,11 @@ const Card = async (className, rover) => {
 
   const cardInfo = await CardInfo(rover);
 
-  const children = List([
+  const children = [
     CardBgImage('card__bg-image', rover),
     ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
     cardInfo,
-  ]);
+  ];
 
   return children.reduce((card, currChild) => {
     card.append(currChild);
@@ -134,7 +142,6 @@ const ImageOfTheDay = (apod) => {
   if (!apod || apod.date === today.getDate()) {
     getImageOfTheDay(store);
   }
-
   // check if the photo of the day is actually type video!
   if (apod.media_type === 'video') {
     return `
@@ -159,44 +166,10 @@ const getImageOfTheDay = (state) => {
   fetch(`http://localhost:3000/apod`)
     .then((res) => res.json())
     .then((apod) => updateStore(store, { apod }));
-
-  return data;
 };
 
-const getRoverInfo = function (state) {
-  // TODO: check this logic works, particularly roverInfo destructuring
-  // in updateStore call
-  let { currentRover } = state;
+const getRoverInfo = function (rover) {
+  const reqRoute = `http://localhost:3000/rover-info/${rover}`;
 
-  const reqRoute = `http://localhost:3000/rover-info/${currentRover}`;
-
-  fetch(reqRoute)
-    .then((raw) => raw.json())
-    .then((parsed) => Map(parsed))
-    .then((roverInfo) => updateStore(store, roverInfo));
+  return fetch(reqRoute).then((raw) => raw.json());
 };
-
-// getRoverInfo(store);
-
-// setTimeout(() => {
-//   console.log(store);
-// }, 1000);
-
-// ------------------------------------------------------  LEGACY TO BE ULTIMAT ELY REMOVED
-
-// {
-/* <section>
-            <h3>Put things on the page!</h3>
-            <p>Here is an example section.</p>
-            <p>
-                One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                but generally help with discoverability of relevant imagery.
-            </p>
-            ${ImageOfTheDay(apod)}
-        </section>
-      <footer></footer> */
-// }
