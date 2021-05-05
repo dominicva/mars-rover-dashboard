@@ -36,6 +36,7 @@ const App = (state) => {
     MainHeading('main-heading', title),
     Nav('nav-container', ...rovers),
     CardBgImage('card__bg-image', store.rovers[0]),
+    ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
   ];
 };
 
@@ -46,7 +47,7 @@ window.addEventListener('load', () => {
 
 // ------------------------------------------------------  COMPONENTS
 
-const Component = function (tag, className, text) {
+const Component = (tag, className, text) => {
   const domEl = document.createElement(tag);
   if (className) domEl.className = className;
   if (text) domEl.textContent = text;
@@ -76,10 +77,16 @@ const CardBgImage = (className, rover) => {
   return img;
 };
 
-const ExpandGalleryBtn = function (x) {
+const ExpandGalleryBtn = (className, text, handler) => {
   // TODO:
-  // innerHTML for expand gallery button
+  // component for expand gallery button
+  const btn = Component('button', className, text);
+  const icon = Component('i', 'material-icons', 'add');
+  btn.prepend(icon);
+
   // add click listener with launchGallery as callback
+
+  return btn;
 };
 
 const CardInfo = function (state) {
