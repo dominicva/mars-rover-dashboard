@@ -24,7 +24,17 @@ const render = async (root, state) => {
 
   const app = App(state);
 
-  app.forEach((component) => root.append(component));
+  app.reduce((rootEl, component) => {
+    rootEl.append(component);
+    return rootEl;
+  }, root);
+
+  // app.forEach((component) => {
+  //   // console.log('accum:', accum);
+  //   // console.log('component:', component);
+  //   root.append(component);
+  //   // return accum;
+  // });
 };
 
 // create content
@@ -32,9 +42,10 @@ const App = (state) => {
   let { title, apod, rovers } = state;
 
   return [
+    ClearLoading(),
     MainHeading('main-heading', title),
     Nav('nav-container', ...rovers),
-    CardBgImage(store.rovers[0]),
+    CardBgImage('card__bg-image', store.rovers[0]),
   ];
 
   // return `
@@ -52,33 +63,45 @@ window.addEventListener('load', () => {
 
 // ------------------------------------------------------  COMPONENTS
 
-const MainHeading = function (className, text) {
-  const domEl = document.createElement('h1');
-  domEl.className = className;
-  domEl.textContent = `${text}`;
-  console.log(domEl);
+const Component = function (tag, className, text) {
+  const domEl = document.createElement(tag);
+  if (className) domEl.className = className;
+  if (text) domEl.textContent = text;
 
   return domEl;
 };
 
+const ClearLoading = function () {
+  return (root.innerHTML = '');
+};
+
+const MainHeading = function (className, text) {
+  return Component('h1', className, text);
+};
+
 const NavItem = function (className, rover) {
-  return `<li class="${className}">${rover}</li>`;
+  return Component('li', className, rover);
 };
 
 const Nav = function (className, ...rovers) {
-  let output = `<nav class="${className}"><ul>`;
-  rovers.forEach((rover) => (output += NavItem('nav-item', rover)));
-  output += `</ul></nav>`;
+  const nav = Component('nav', className);
+  const navList = Component('ul');
+  nav.append(navList);
 
-  return output;
+  rovers.forEach((rover) => navList.append(NavItem('nav-item', rover)));
+
+  return nav;
 };
 
-const CardBgImage = function (rover) {
-  return `
-    <div 
-      style="background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');" 
-      class="card__bg-image"></div>
-    `;
+const CardBgImage = function (className, rover) {
+  const img = Component('div', className);
+  img.style = `background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');`;
+  return img;
+  // return `
+  //   <div
+  //     style="background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');"
+  //     class="card__bg-image"></div>
+  //   `;
 };
 
 const ExpandGalleryBtn = function (x) {
