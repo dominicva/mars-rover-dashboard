@@ -33,12 +33,12 @@ const render = async (root, state) => {
 const App = (state) => {
   let { title, apod, rovers } = state;
 
-  return [
+  return List([
     ClearLoading(),
     MainHeading('main-heading', title),
     Nav('nav-container', ...rovers),
     Card('card', store.rovers[0]),
-  ];
+  ]);
 };
 
 // listening for load event because page should load before any JS is called
@@ -91,14 +91,16 @@ const ExpandGalleryBtn = (className, text, handler) => {
   return btn;
 };
 
-const CardInfo = function (state) {
+const CardInfo = (state) => {
   // TODO:
   // make request for rover info from backend (CALL TO getRoverInfo)
+  const info = getRoverInfo(state);
+
   // update the store accordingly
   // NB refactor currentRover in store to be Immutable object
 };
 
-const Card = function (className, rover) {
+const Card = (className, rover) => {
   const card = Component('div', className);
 
   const children = List([
@@ -112,6 +114,8 @@ const Card = function (className, rover) {
     return card;
   }, card);
 };
+
+const Gallery = (state) => {};
 
 // Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {
@@ -158,10 +162,14 @@ const getRoverInfo = function (state) {
   // in updateStore call
   let { currentRover } = state;
 
-  fetch(`http://localhost:3000/rover-info/${currentRover.toLowerCase()}`)
+  const reqRoute = `http://localhost:3000/rover-info/${currentRover}`;
+
+  fetch(reqRoute)
     .then((res) => res.json())
     .then((roverInfo) => updateStore(store, { roverInfo }));
 };
+
+getRoverInfo(store);
 
 // ------------------------------------------------------  LEGACY TO BE ULTIMAT ELY REMOVED
 

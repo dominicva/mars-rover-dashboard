@@ -76,6 +76,10 @@ main {
   background-repeat: no-repeat;
 }
 
+.card__gallery-btn {
+  cursor: pointer;
+}
+
 footer {
   /* footer styles */
 }

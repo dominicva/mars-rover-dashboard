@@ -13,6 +13,21 @@ app.use(bodyParser.json());
 app.use('/', express.static(path.join(__dirname, '../public')));
 
 // your API calls
+// app.get('/rover-info/:rover', function (req, res) {
+//   const rover = req.params.rover;
+
+//   // res.send(req.params);
+// });
+app.get('/rover-info/:rover', async (req, res) => {
+  const rover = req.params.rover;
+  console.log(rover);
+
+  const manifestsEndpoint = `https://api.nasa.gov/mars-photos/api/v1/manifests/Curiosity/?api_key=${process.env.API_KEY}`;
+
+  try {
+    const info = await fetch();
+  } catch (error) {}
+});
 
 // example API call
 app.get('/apod', async (req, res) => {
