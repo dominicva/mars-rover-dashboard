@@ -19,22 +19,12 @@ const updateStore = (store, newState) => {
 
 const render = async (root, state) => {
   // root.innerHTML = App(state);
-  // root.innerHTML = '';
-  // root.append(App(state));
-
   const app = App(state);
 
-  app.reduce((rootEl, component) => {
-    rootEl.append(component);
-    return rootEl;
+  return app.reduce((root, component) => {
+    root.append(component);
+    return root;
   }, root);
-
-  // app.forEach((component) => {
-  //   // console.log('accum:', accum);
-  //   // console.log('component:', component);
-  //   root.append(component);
-  //   // return accum;
-  // });
 };
 
 // create content
@@ -47,13 +37,6 @@ const App = (state) => {
     Nav('nav-container', ...rovers),
     CardBgImage('card__bg-image', store.rovers[0]),
   ];
-
-  // return `
-  //       ${MainHeading('main-heading', title)}
-  //       ${Nav('nav-container', ...rovers)}
-  //       ${CardBgImage(store.rovers[0])}
-
-  // `;
 };
 
 // listening for load event because page should load before any JS is called
@@ -71,19 +54,13 @@ const Component = function (tag, className, text) {
   return domEl;
 };
 
-const ClearLoading = function () {
-  return (root.innerHTML = '');
-};
+const ClearLoading = () => (root.innerHTML = '');
 
-const MainHeading = function (className, text) {
-  return Component('h1', className, text);
-};
+const MainHeading = (className, text) => Component('h1', className, text);
 
-const NavItem = function (className, rover) {
-  return Component('li', className, rover);
-};
+const NavItem = (className, rover) => Component('li', className, rover);
 
-const Nav = function (className, ...rovers) {
+const Nav = (className, ...rovers) => {
   const nav = Component('nav', className);
   const navList = Component('ul');
   nav.append(navList);
@@ -93,15 +70,10 @@ const Nav = function (className, ...rovers) {
   return nav;
 };
 
-const CardBgImage = function (className, rover) {
+const CardBgImage = (className, rover) => {
   const img = Component('div', className);
   img.style = `background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');`;
   return img;
-  // return `
-  //   <div
-  //     style="background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');"
-  //     class="card__bg-image"></div>
-  //   `;
 };
 
 const ExpandGalleryBtn = function (x) {
