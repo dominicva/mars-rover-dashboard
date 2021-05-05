@@ -18,36 +18,32 @@ const updateStore = (store, newState) => {
 };
 
 const render = async (root, state) => {
-  root.innerHTML = App(state);
+  // root.innerHTML = App(state);
+  // root.innerHTML = '';
+  // root.append(App(state));
+
+  const app = App(state);
+
+  app.forEach((component) => root.append(component));
 };
 
 // create content
 const App = (state) => {
   let { title, apod, rovers } = state;
 
-  return `
-        ${MainHeading('main-heading', title)}
-        ${Nav('nav-container', ...rovers)}
-        ${CardBgImage(store.rovers[0])}
-        
-  `;
+  return [
+    MainHeading('main-heading', title),
+    Nav('nav-container', ...rovers),
+    CardBgImage(store.rovers[0]),
+  ];
+
+  // return `
+  //       ${MainHeading('main-heading', title)}
+  //       ${Nav('nav-container', ...rovers)}
+  //       ${CardBgImage(store.rovers[0])}
+
+  // `;
 };
-// {
-/* <section>
-            <h3>Put things on the page!</h3>
-            <p>Here is an example section.</p>
-            <p>
-                One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                but generally help with discoverability of relevant imagery.
-            </p>
-            ${ImageOfTheDay(apod)}
-        </section>
-      <footer></footer> */
-// }
 
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
@@ -57,7 +53,12 @@ window.addEventListener('load', () => {
 // ------------------------------------------------------  COMPONENTS
 
 const MainHeading = function (className, text) {
-  return `<h1 class="${className}">${text}</h1>`;
+  const domEl = document.createElement('h1');
+  domEl.className = className;
+  domEl.textContent = `${text}`;
+  console.log(domEl);
+
+  return domEl;
 };
 
 const NavItem = function (className, rover) {
@@ -83,12 +84,14 @@ const CardBgImage = function (rover) {
 const ExpandGalleryBtn = function (x) {
   // TODO:
   // innerHTML for expand gallery button
+  // add click listener with launchGallery as callback
 };
 
 const CardInfo = function (state) {
-  // TODO: make request for rover info from backend
+  // TODO:
+  // make request for rover info from backend (CALL TO getRoverInfo)
   // update the store accordingly
-  // NB refactor currentRover in store to be object
+  // NB refactor currentRover in store to be Immutable object
 };
 
 const RoverCard = function (className, rover) {
@@ -139,3 +142,32 @@ const getImageOfTheDay = (state) => {
 
   return data;
 };
+
+const getRoverInfo = function (state) {
+  // TODO: check this logic works, particularly roverInfo destructuring
+  // in updateStore call
+  let { currentRover } = state;
+
+  fetch(`http://localhost:3000/rover-info/${currentRover.toLowerCase()}`)
+    .then((res) => res.json())
+    .then((roverInfo) => updateStore(store, { roverInfo }));
+};
+
+// ------------------------------------------------------  LEGACY TO BE ULTIMAT ELY REMOVED
+
+// {
+/* <section>
+            <h3>Put things on the page!</h3>
+            <p>Here is an example section.</p>
+            <p>
+                One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
+                the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
+                This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
+                applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
+                explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
+                but generally help with discoverability of relevant imagery.
+            </p>
+            ${ImageOfTheDay(apod)}
+        </section>
+      <footer></footer> */
+// }
