@@ -1,3 +1,8 @@
+'use strict';
+
+// const Immutable = require('immutable');
+
+// TODO: refactor store to use Immutable
 let store = {
   user: { name: 'Student' },
   title: 'Mars Rover Dashboard',
@@ -53,35 +58,23 @@ window.addEventListener('load', () => {
 
 // ------------------------------------------------------  COMPONENTS
 
-// Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-const Greeting = (name) => {
-  if (name) {
-    return `
-          <h1>Welcome, ${name}!</h1>
-      `;
-  }
-
-  return `
-      <h1>Hello!</h1>
-  `;
+const MainHeading = function (className, text) {
+  return `<h1 class="${className}">${text}</h1>`;
 };
 
-const MainHeading = (className, text) =>
-  `<h1 class="${className}">${text}</h1>`;
+const NavItem = function (className, rover) {
+  return `<li class="${className}">${rover}</li>`;
+};
 
-const NavItem = (className, rover) => `<li class="${className}">${rover}</li>`;
-
-const Nav = (className, ...rovers) => {
+const Nav = function (className, ...rovers) {
   let output = `<nav class="${className}"><ul>`;
-
   rovers.forEach((rover) => (output += NavItem('nav-item', rover)));
-
   output += `</ul></nav>`;
 
   return output;
 };
 
-const CardBgImage = (rover) => {
+const CardBgImage = function (rover) {
   return `
     <div 
       style="background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');" 
@@ -89,11 +82,18 @@ const CardBgImage = (rover) => {
     `;
 };
 
-const ExpandGalleryBtn = (x) => {};
+const ExpandGalleryBtn = function (x) {
+  // TODO:
+  // innerHTML for expand gallery button
+};
 
-const CardInfo = (state) => {};
+const CardInfo = function (state) {
+  // TODO: make request for rover info from backend
+  // update the store accordingly
+  // NB refactor currentRover in store to be object
+};
 
-const RoverCard = (className, rover) => {
+const RoverCard = function (className, rover) {
   const html = `
     <div class="${className}">
      ${CardBgImage(rover)}
