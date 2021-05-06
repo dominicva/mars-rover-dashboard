@@ -10,15 +10,14 @@ let store = {
     launchDate: undefined,
     status: undefined,
     lastPhotoDate: undefined,
+    formattedEntries: [],
   },
 };
 
 const root = document.getElementById('root');
 
-const updateStore = (store, newState) => {
-  store = Object.assign(store, newState);
-  render(root, store);
-};
+const updateStore = (state, newState) =>
+  (state = Object.assign(state, newState));
 
 const render = async (root, state) => {
   const app = await App(state);
@@ -28,27 +27,21 @@ const render = async (root, state) => {
   return reduce(app, append, root);
 };
 
-const App = async (state) => {
-  const { title, apod, rovers, currentRover } = state;
-
-  return [
-    MainHeading('main-heading', title),
-    Nav('nav-container', ...rovers),
-    await Card('card', currentRover.name),
-  ];
-};
+const App = async (state) => [
+  MainHeading('main-heading', state),
+  Nav('nav-container', state),
+  await Card('card', state),
+];
 
 window.addEventListener('load', () => {
   render(root, store);
 });
 
 // ------------------------------------------------------  UTILS
-
 const append = (parent, child) => {
   parent.append(child);
   return parent;
 };
-
 const reduce = (arr, reducer, accum) => {
   let i = 0;
   if (!accum) accum = arr[i++];
@@ -57,9 +50,7 @@ const reduce = (arr, reducer, accum) => {
   }
   return accum;
 };
-
 const clearLoading = () => (root.innerHTML = '');
-
 // ------------------------------------------------------  COMPONENTS
 
 const Component = (tag, className, innerHtml) => {
@@ -69,11 +60,13 @@ const Component = (tag, className, innerHtml) => {
   return domEl;
 };
 
-const MainHeading = (className, text) => Component('h1', className, text);
+const MainHeading = (className, { currentRover }) =>
+  Component('h1', className, currentRover.name);
 
 const NavItem = (className, rover) => Component('li', className, rover);
 
-const Nav = (className, ...rovers) => {
+const Nav = (className, state) => {
+  const { rovers } = state;
   const nav = Component('nav', className);
   const navList = Component('ul');
   append(nav, navList);
@@ -81,7 +74,8 @@ const Nav = (className, ...rovers) => {
   return nav;
 };
 
-const CardBgImage = (className, rover) => {
+const CardBgImage = (className, state) => {
+  const { name: rover } = state.currentRover;
   const img = Component('div', className);
   img.style = `background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');`;
   return img;
@@ -95,29 +89,29 @@ const ExpandGalleryBtn = (className, text, handler) => {
   return btn;
 };
 
-const CardInfo = async (rover) => {
-  const info = await getRoverInfo(rover);
-  const [name] = info;
+const CardInfo = async (state) => {
+  await getRoverInfo(state);
+  const { name, formattedEntries } = state.currentRover;
 
-  const cardInfo = Component('div', 'card__info'); // parent div
+  const cardInfo = Component('div', 'card__info');
 
   const roverTitle = Component(
     'label',
     'card__label',
-    `${name[0]}<h2 class="card__info-heading">${name[1]}</h2>`
+    `${name}<h2 class="card__info-heading">${name}</h2>`
   );
 
   append(cardInfo, roverTitle);
 
   const statsContainer = Component('ul', 'card__stats-container');
 
-  info
-    .slice(1) // don't need info[0] -> rover title handled above
-    .map((stat) =>
+  formattedEntries
+    .slice(1) // don't need formattedEntries[0] -> rover title handled above
+    .map((entry) =>
       Component(
         'label',
         'card__label',
-        `${stat[0]}<li class="card__stat">${stat[1]}</li>`
+        `${entry[0]}<li class="card__entry">${entry[1]}</li>`
       )
     )
     .forEach((el) => append(statsContainer, el));
@@ -127,13 +121,13 @@ const CardInfo = async (rover) => {
   return cardInfo;
 };
 
-const Card = async (className, rover) => {
+const Card = async (className, state) => {
   const card = Component('div', className);
 
-  const cardInfo = await CardInfo(rover);
+  const cardInfo = await CardInfo(state);
 
   const cardChildren = [
-    CardBgImage('card__bg-image', rover),
+    CardBgImage('card__bg-image', state),
     ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
     cardInfo,
   ];
@@ -179,20 +173,14 @@ const getImageOfTheDay = (state) => {
     .then((apod) => updateStore(store, { apod }));
 };
 
-/**
- * Returns an array of (length 2 string) arrays each containing a formatted
- * string label (first element) for the associated rover stat (second element)
- * @param {string} rover
- * @returns {Array[]} - NB array of arrays
- */
-const getRoverInfo = async (rover) => {
-  console.log('store before', store);
-  const reqRoute = `http://localhost:3000/rover-info/${rover}`;
+const getRoverInfo = async (state) => {
+  const { name: rover } = state.currentRover;
+
+  const reqRoute = `http://localhost:3000/rover-info/${rover.toLowerCase()}`;
   const data = await fetch(reqRoute).then((raw) => raw.json());
-  const [newCurrentRover, formattedData] = data;
-  console.log('newCurrentRover:', newCurrentRover);
-  console.log('formattedData:', formattedData);
-  // updateStore(store.currentRover, newCurrentRover);
-  // console.log('store after', store);
-  return data[1];
+
+  const updatedStore = store;
+  updatedStore.currentRover = data;
+
+  updateStore(store, updatedStore);
 };
