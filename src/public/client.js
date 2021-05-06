@@ -186,6 +186,13 @@ const getImageOfTheDay = (state) => {
  * @returns {Array[]} - NB array of arrays
  */
 const getRoverInfo = async (rover) => {
+  console.log('store before', store);
   const reqRoute = `http://localhost:3000/rover-info/${rover}`;
-  return await fetch(reqRoute).then((raw) => raw.json());
+  const data = await fetch(reqRoute).then((raw) => raw.json());
+  const [newCurrentRover, formattedData] = data;
+  console.log('newCurrentRover:', newCurrentRover);
+  console.log('formattedData:', formattedData);
+  // updateStore(store.currentRover, newCurrentRover);
+  // console.log('store after', store);
+  return data[1];
 };

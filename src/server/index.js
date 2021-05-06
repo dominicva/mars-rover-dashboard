@@ -37,6 +37,7 @@ app.get('/rover-info/:rover', async (req, res) => {
   const manifestsEndpoint = `https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}/?api_key=${process.env.API_KEY}`;
 
   try {
+    let o = {};
     const info = await fetch(manifestsEndpoint)
       .then((raw) => raw.json())
       .then((parsed) => {
@@ -48,7 +49,7 @@ app.get('/rover-info/:rover', async (req, res) => {
           max_date: lastPhotoDate,
         } = parsed.photo_manifest;
 
-        const o = {
+        o = {
           name,
           landingDate,
           launchDate,
@@ -60,7 +61,7 @@ app.get('/rover-info/:rover', async (req, res) => {
           entry[0] = parseKey(entry[0]);
           return entry;
         });
-        return formatted;
+        return [o, formatted];
       });
     res.send(info);
   } catch (error) {
