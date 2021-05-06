@@ -174,7 +174,6 @@ const ImageOfTheDay = (apod) => {
 // Example API call
 const getImageOfTheDay = (state) => {
   let { apod } = state;
-
   fetch(`http://localhost:3000/apod`)
     .then((res) => res.json())
     .then((apod) => updateStore(store, { apod }));
@@ -186,8 +185,7 @@ const getImageOfTheDay = (state) => {
  * @param {string} rover
  * @returns {Array[]} - NB array of arrays
  */
-const getRoverInfo = (rover) => {
+const getRoverInfo = async (rover) => {
   const reqRoute = `http://localhost:3000/rover-info/${rover}`;
-
-  return fetch(reqRoute).then((raw) => raw.json());
+  return await fetch(reqRoute).then((raw) => raw.json());
 };
