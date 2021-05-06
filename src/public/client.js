@@ -25,10 +25,7 @@ const render = async (root, state) => {
 
   clearLoading();
 
-  return app.reduce((root, component) => {
-    root.append(component);
-    return root;
-  }, root);
+  return reduce(app, append, root);
 };
 
 const App = async (state) => {
@@ -46,6 +43,20 @@ window.addEventListener('load', () => {
 });
 
 // ------------------------------------------------------  UTILS
+
+const append = (parent, child) => {
+  parent.append(child);
+  return parent;
+};
+
+const reduce = (arr, reducer, accum) => {
+  let i = 0;
+  if (!accum) accum = arr[i++];
+  for (i; i < arr.length; i++) {
+    accum = reducer(accum, arr[i]);
+  }
+  return accum;
+};
 
 const clearLoading = () => (root.innerHTML = '');
 
@@ -65,8 +76,8 @@ const NavItem = (className, rover) => Component('li', className, rover);
 const Nav = (className, ...rovers) => {
   const nav = Component('nav', className);
   const navList = Component('ul');
-  nav.append(navList);
-  rovers.forEach((rover) => navList.append(NavItem('nav-item', rover)));
+  append(nav, navList);
+  rovers.forEach((rover) => append(navList, NavItem('nav-item', rover)));
   return nav;
 };
 
@@ -95,7 +106,8 @@ const CardInfo = async (rover) => {
     'card__label',
     `${name[0]}<h2 class="card__info-heading">${name[1]}</h2>`
   );
-  cardInfo.append(roverTitle);
+
+  append(cardInfo, roverTitle);
 
   const statsContainer = Component('ul', 'card__stats-container');
 
@@ -108,9 +120,9 @@ const CardInfo = async (rover) => {
         `${stat[0]}<li class="card__stat">${stat[1]}</li>`
       )
     )
-    .forEach((el) => statsContainer.append(el));
+    .forEach((el) => append(statsContainer, el));
 
-  cardInfo.append(statsContainer);
+  append(cardInfo, statsContainer);
 
   return cardInfo;
 };
@@ -120,16 +132,13 @@ const Card = async (className, rover) => {
 
   const cardInfo = await CardInfo(rover);
 
-  const children = [
+  const cardChildren = [
     CardBgImage('card__bg-image', rover),
     ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
     cardInfo,
   ];
 
-  return children.reduce((card, currChild) => {
-    card.append(currChild);
-    return card;
-  }, card);
+  return reduce(cardChildren, append, card);
 };
 
 const Gallery = (state) => {};
