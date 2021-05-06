@@ -14,13 +14,14 @@
   --h3-size: 1rem;
   --body-size: 1rem;
   --small-size: 14px;
+  --font-family: 'Source Sans Pro', sans-serif;
 }
 /* -------------------  MOBILE  --------------------- */
 
 body {
   display: flex;
   flex-direction: column;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: var(--font-family);
   background-color: var(--primary-dark);
   color: var(--pure-white);
   min-height: 100vh;
@@ -28,6 +29,10 @@ body {
 
 header {
   /* header styles */
+}
+
+button {
+  font: 400 1rem var(--font-family);
 }
 
 main {
@@ -68,16 +73,36 @@ main {
   border-bottom: 1px solid var(--pure-white);
 }
 
+.card {
+  background-color: var(--pure-white);
+  border-radius: 1rem;
+}
+
 .card__bg-image {
   width: 100%;
-  height: 20rem;
+  height: 22rem;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  border-radius: 0.75rem;
 }
 
 .card__gallery-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
   cursor: pointer;
+  background-color: transparent;
+  border-style: none;
+  border: 1px solid var(--primary-dark);
+  border-radius: 0.25rem;
+  height: 3rem;
+  width: 10rem;
+  margin: 1rem 0 0 1rem;
+}
+
+.card__info {
+  color: var(--primary-dark);
 }
 
 footer {
