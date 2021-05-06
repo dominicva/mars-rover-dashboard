@@ -1,5 +1,5 @@
 'use strict';
-// const { List, Map, toJS } = Immutable;
+
 let store = {
   title: 'Mars Rover Dashboard',
   apod: '',
@@ -21,9 +21,7 @@ const updateStore = (state, newState) =>
 
 const render = async (root, state) => {
   const app = await App(state);
-
   clearLoading();
-
   return reduce(app, append, root);
 };
 
@@ -38,6 +36,7 @@ window.addEventListener('load', () => {
 });
 
 // ------------------------------------------------------  UTILS
+
 const append = (parent, child) => {
   parent.append(child);
   return parent;
@@ -51,6 +50,7 @@ const reduce = (arr, reducer, accum) => {
   return accum;
 };
 const clearLoading = () => (root.innerHTML = '');
+
 // ------------------------------------------------------  COMPONENTS
 
 const Component = (tag, className, innerHtml) => {
