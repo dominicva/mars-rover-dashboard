@@ -51,10 +51,10 @@ const clearLoading = () => (root.innerHTML = '');
 
 // ------------------------------------------------------  COMPONENTS
 
-const Component = (tag, className, text) => {
+const Component = (tag, className, innerHtml) => {
   const domEl = document.createElement(tag);
   if (className) domEl.className = className;
-  if (text) domEl.textContent = text;
+  if (innerHtml) domEl.innerHTML = innerHtml;
   return domEl;
 };
 
@@ -85,28 +85,31 @@ const ExpandGalleryBtn = (className, text, handler) => {
 };
 
 const CardInfo = async (rover) => {
-  // const {
-  //   name,
-  //   launchDate,
-  //   landingDate,
-  //   status,
-  //   lastPhotoDate,
-  // } = await getRoverInfo(rover);
   const info = await getRoverInfo(rover);
-  const { name, launchDate, landingDate, status, lastPhotoDate } = info;
-  // updateStore(store.currentRover, info);
-  // console.log(store);
+  const [name] = info;
 
-  const cardInfo = Component('div', 'card__info');
+  const cardInfo = Component('div', 'card__info'); // parent div
 
-  const roverTitle = Component('h2', 'card__info-heading', name);
+  const roverTitle = Component(
+    'label',
+    'card__label',
+    `${name[0]}<h2 class="card__info-heading">${name[1]}</h2>`
+  );
+  cardInfo.append(roverTitle);
+
   const statsContainer = Component('ul', 'card__stats-container');
 
-  [launchDate, landingDate, status, lastPhotoDate]
-    .map((stat) => Component('li', 'card__stat', stat))
+  info
+    .slice(1) // don't need info[0] -> rover title handled above
+    .map((stat) =>
+      Component(
+        'label',
+        'card__label',
+        `${stat[0]}<li class="card__stat">${stat[1]}</li>`
+      )
+    )
     .forEach((el) => statsContainer.append(el));
 
-  cardInfo.append(roverTitle);
   cardInfo.append(statsContainer);
 
   return cardInfo;
@@ -168,7 +171,13 @@ const getImageOfTheDay = (state) => {
     .then((apod) => updateStore(store, { apod }));
 };
 
-const getRoverInfo = function (rover) {
+/**
+ * Returns an array of (length 2 string) arrays each containing a formatted
+ * string label (first element) for the associated rover stat (second element)
+ * @param {string} rover
+ * @returns {Array[]} - NB array of arrays
+ */
+const getRoverInfo = (rover) => {
   const reqRoute = `http://localhost:3000/rover-info/${rover}`;
 
   return fetch(reqRoute).then((raw) => raw.json());
