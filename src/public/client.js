@@ -27,7 +27,7 @@ const render = async (root, state) => {
 
 const App = async (state) => [
   MainHeading('main-heading', state),
-  Nav('nav-container', state),
+  Nav('nav-container', state, navHandler),
   await Card('card', state),
 ];
 
@@ -41,6 +41,7 @@ const append = (parent, child) => {
   parent.append(child);
   return parent;
 };
+
 const reduce = (arr, reducer, accum) => {
   let i = 0;
   if (!accum) accum = arr[i++];
@@ -49,6 +50,7 @@ const reduce = (arr, reducer, accum) => {
   }
   return accum;
 };
+
 const clearLoading = () => (root.innerHTML = '');
 
 // ------------------------------------------------------  COMPONENTS
@@ -60,18 +62,30 @@ const Component = (tag, className, innerHtml) => {
   return domEl;
 };
 
-const MainHeading = (className, { currentRover }) =>
-  Component('h1', className, currentRover.name);
+const MainHeading = (className, { title }) => Component('h1', className, title);
 
 const NavItem = (className, rover) => Component('li', className, rover);
 
-const Nav = (className, state) => {
+const Nav = (className, state, handler) => {
   const { rovers } = state;
+
   const nav = Component('nav', className);
   const navList = Component('ul');
+  navList.addEventListener('click', (e) => handler(e));
   append(nav, navList);
+
   rovers.forEach((rover) => append(navList, NavItem('nav-item', rover)));
+
   return nav;
+};
+
+const navHandler = (e) => {
+  const clickedRover = e.target.textContent;
+  const updatedStore = store;
+  updatedStore.currentRover.name = clickedRover;
+
+  updateStore(store, updatedStore);
+  render(root, store);
 };
 
 const CardBgImage = (className, state) => {
