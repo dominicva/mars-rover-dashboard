@@ -13,8 +13,8 @@
 ### Run on your local machine
 
 1. Get the code
-2. Run <npm install>
-3. Run <npm start> to start local express server at port 3000
+2. Run `npm install`
+3. Run `npm start` to start local express server at port 3000
 
 ### Trello kanban board
 
