@@ -78,6 +78,8 @@ main {
   background-color: var(--pure-white);
   border-radius: 1rem;
   padding-bottom: 1rem;
+  transform: translateX(0);
+  transition: transform 0.5s ease-out;
 }
 
 .card * {
@@ -152,4 +154,22 @@ footer {
 
 @media (min-width: 1824px) {
   /* use mobile */
+}
+
+@keyframes animate-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-60rem);
+  }
+}
+
+@keyframes animate-right {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(60rem);
+  }
 }

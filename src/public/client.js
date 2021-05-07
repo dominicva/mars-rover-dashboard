@@ -9,7 +9,7 @@ const getCurrRoverIdx = (state) => {
 };
 
 const RoverData = (state) => ({
-  currIdx: getCurrRoverIdx(state),
+  index: getCurrRoverIdx(state),
 });
 
 const append = (parent, child) => {
@@ -38,6 +38,7 @@ let store = {
   apod: '',
   rovers: ['Curiosity', 'Opportunity', 'Spirit'],
   currentRover: 'Curiosity',
+  previousRover: 'Curiosity',
 };
 
 store.currentRoverData = RoverData(store);
@@ -45,7 +46,19 @@ store.currentRoverData = RoverData(store);
 // ------------------------------------------------------  WHERE IT ALL HAPPENS
 
 const updateRover = async (rover) => {
+  store.previousRover = store.currentRover;
   store.currentRover = rover;
+  const prevIndex = store.rovers.indexOf(store.previousRover);
+  const newIndex = store.rovers.indexOf(store.currentRover);
+  const currentCard = document.querySelector('.card');
+  if (currentCard) {
+    if (newIndex > prevIndex) {
+      currentCard.style.transform = 'translateX(-60rem)';
+    } else if (newIndex < prevIndex) {
+      currentCard.style.transform = 'translateX(60rem)';
+    }
+  }
+
   const data = await getRoverInfo(rover);
   store.currentRoverData = Object.assign(RoverData(store), data);
 
@@ -64,9 +77,9 @@ const App = (state) => [
   Card('card', state),
 ];
 
-// window.addEventListener('load', () => {
-//   render(root, store);
-// });
+window.addEventListener('load', () => {
+  updateRover('Curiosity');
+});
 
 // ------------------------------------------------------  COMPONENTS
 
@@ -97,7 +110,17 @@ const NavItem = (className, rover) => Component('li', className, rover);
 const navHandler = async (e) => await updateRover(e.target.textContent);
 
 const Card = (className, state) => {
+  const { previousRover } = state;
+  const prevIndex = state.rovers.indexOf(previousRover);
+  const { index: newIndex } = state.currentRoverData;
+
   const card = Component('div', className);
+
+  if (newIndex > prevIndex) {
+    card.style.animation = 'animate-right 0.3s ease-out 1 reverse';
+  } else if (newIndex < prevIndex) {
+    card.style.animation = 'animate-left 0.3s ease-out 1 reverse';
+  }
 
   const cardInfo = CardInfo(state);
 
@@ -200,5 +223,3 @@ const getRoverInfo = async (rover) => {
     .then((raw) => raw.json())
     .then((parsed) => parsed);
 };
-
-updateRover('Curiosity');
