@@ -107,9 +107,15 @@ const Nav = (className, state, handler) => {
   return nav;
 };
 
-const NavItem = (className, rover) => Component('li', className, rover);
+const NavItem = (className, rover) => {
+  const navItem = Component('li', className, rover);
+  if (store.currentRover == rover) navItem.classList.add('selected');
+  return navItem;
+};
 
-const navHandler = async (e) => await updateRover(e.target.textContent);
+const navHandler = async (e) => {
+  await updateRover(e.target.textContent);
+};
 
 const Card = (className, state) => {
   const { previousRover } = state;
