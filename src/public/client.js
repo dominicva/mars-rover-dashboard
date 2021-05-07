@@ -18,17 +18,30 @@ let store = {
   title: 'Mars Rover Dashboard',
   apod: '',
   rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-  currentRover: 'Spirit',
+  currentRover: 'Curiosity',
+  currentRoverData: {},
 };
 
-store.currentRoverData = {
-  currIdx: store.rovers.indexOf(store.currentRover),
-  landingDate: undefined,
-  launchDate: undefined,
-  status: undefined,
-  lastPhotoDate: undefined,
-  formattedEntries: [],
+const CurrentRoverData = function (state) {
+  console.log('inside CurrentRoverData');
+  this.currIdx = getCurrIdx(state);
+  this.landingDate = undefined;
+  this.launchDate = undefined;
+  this.status = undefined;
+  this.lastPhotoDate = undefined;
+  this.formattedEntries = [];
 };
+
+store.currentRoverData = new CurrentRoverData(store);
+
+function getCurrIdx(state) {
+  return state.rovers.indexOf(state.currentRover);
+}
+
+function setCurrentRover(rover) {
+  store.currentRover = rover;
+  store.currentRoverData = new CurrentRoverData(store);
+}
 
 const root = document.getElementById('root');
 
@@ -142,17 +155,15 @@ const ExpandGalleryBtn = (className, text, handler) => {
 
 const CardInfo = async (state) => {
   await getRoverInfo(state);
-  const {  } = ;
-  
-  
-  const { name, formattedEntries } = state.currentRover;
+  const { currentRover } = state;
+  const { formattedEntries } = state.currentRoverData;
 
   const cardInfo = Component('div', 'card__info');
 
   const roverTitle = Component(
     'label',
     'card__label',
-    `${name}<h2 class="card__info-heading">${name}</h2>`
+    `Name<h2 class="card__info-heading">${currentRover}</h2>`
   );
 
   append(cardInfo, roverTitle);
@@ -214,15 +225,15 @@ const getImageOfTheDay = (state) => {
 };
 
 const getRoverInfo = async (state) => {
-  const cache = {}; // to memoize previously called rovers
+  // const cache = {}; // to memoize previously called rovers
 
-  const { name: rover } = state.currentRover;
-  const updatedStore = store;
+  const { currentRover: r } = state;
+  const updatedStore = store; // TODO: this should be state not store
 
-  const reqRoute = `http://localhost:3000/rover-info/${rover.toLowerCase()}`;
+  const reqRoute = `http://localhost:3000/rover-info/${r.toLowerCase()}`;
   await fetch(reqRoute)
     .then((raw) => raw.json())
-    .then((parsed) => (updatedStore.currentRover = parsed));
+    .then((parsed) => (updatedStore.currentRoverData = parsed));
 
   updateStore(store, updatedStore);
 };

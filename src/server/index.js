@@ -43,7 +43,7 @@ app.get('/rover-info/:rover', async (req, res) => {
     const info = await fetch(manifestsEndpoint)
       .then((raw) => raw.json())
       .then((parsed) => {
-        console.log(parsed);
+        // console.log(parsed);
         const {
           name,
           landing_date: landingDate,
