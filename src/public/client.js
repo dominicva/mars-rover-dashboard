@@ -1,70 +1,16 @@
 'use strict';
 
-// let store = {
-//   title: 'Mars Rover Dashboard',
-//   apod: '',
-//   rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-//   currentRover: {
-//     name: 'Curiosity',
-//     landingDate: undefined,
-//     launchDate: undefined,
-//     status: undefined,
-//     lastPhotoDate: undefined,
-//     formattedEntries: [],
-//   },
-// };
-
-let store = {
-  title: 'Mars Rover Dashboard',
-  apod: '',
-  rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-  currentRover: 'Curiosity',
-  currentRoverData: {},
-};
-
-const CurrentRoverData = function (state) {
-  console.log('inside CurrentRoverData');
-  this.currIdx = getCurrIdx(state);
-  this.landingDate = undefined;
-  this.launchDate = undefined;
-  this.status = undefined;
-  this.lastPhotoDate = undefined;
-  this.formattedEntries = [];
-};
-
-store.currentRoverData = new CurrentRoverData(store);
-
-function getCurrIdx(state) {
-  return state.rovers.indexOf(state.currentRover);
-}
-
-function setCurrentRover(rover) {
-  store.currentRover = rover;
-  store.currentRoverData = new CurrentRoverData(store);
-}
+// ------------------------------------------------------  UTILS
 
 const root = document.getElementById('root');
 
-const updateStore = (state, newState) =>
-  (state = Object.assign(state, newState));
-
-const render = async (root, state) => {
-  const app = await App(state);
-  clearDomEl(root);
-  return reduce(app, append, root);
+const getCurrRoverIdx = (state) => {
+  return state.rovers.indexOf(state.currentRover);
 };
 
-const App = async (state) => [
-  MainHeading('main-heading', state),
-  Nav('nav-container', state, navHandler),
-  await Card('card', state),
-];
-
-window.addEventListener('load', () => {
-  render(root, store);
+const RoverData = (state) => ({
+  currIdx: getCurrRoverIdx(state),
 });
-
-// ------------------------------------------------------  UTILS
 
 const append = (parent, child) => {
   parent.append(child);
@@ -82,6 +28,43 @@ const reduce = (arr, reducer, accum) => {
 
 const clearDomEl = (el) => (el.innerHTML = '');
 
+// ------------------------------------------------------  STATE STORAGE
+
+let store = {
+  title: 'Mars Rover Dashboard',
+  apod: '',
+  rovers: ['Curiosity', 'Opportunity', 'Spirit'],
+  currentRover: 'Curiosity',
+};
+
+store.currentRoverData = RoverData(store);
+
+// ------------------------------------------------------  WHERE IT ALL HAPPENS
+
+const updateRover = async (rover) => {
+  store.currentRover = rover;
+  const data = await getRoverInfo(rover);
+  store.currentRoverData = Object.assign(RoverData(store), data);
+
+  render(root, store);
+};
+
+const render = async (root, state) => {
+  const app = await App(state);
+  clearDomEl(root);
+  return reduce(app, append, root);
+};
+
+const App = async (state) => [
+  MainHeading('main-heading', state),
+  Nav('nav-container', state, navHandler),
+  await Card('card', state),
+];
+
+// window.addEventListener('load', () => {
+//   render(root, store);
+// });
+
 // ------------------------------------------------------  COMPONENTS
 
 const Component = (tag, className, innerHtml) => {
@@ -91,11 +74,7 @@ const Component = (tag, className, innerHtml) => {
   return domEl;
 };
 
-// ------------------------------------------------------  MAIN HEADING
-
 const MainHeading = (className, { title }) => Component('h1', className, title);
-
-// ------------------------------------------------------  NAV
 
 const Nav = (className, state, handler) => {
   const { rovers } = state;
@@ -112,22 +91,12 @@ const Nav = (className, state, handler) => {
 
 const NavItem = (className, rover) => Component('li', className, rover);
 
-const navHandler = (e) => {
-  const clickedRover = e.target.textContent;
+const navHandler = async (e) => await updateRover(e.target.textContent);
 
-  const updatedStore = store;
-  updatedStore.currentRover = clickedRover;
-
-  updateStore(store, updatedStore);
-  render(root, store);
-};
-
-// ------------------------------------------------------  CARD
-
-const Card = async (className, state) => {
+const Card = (className, state) => {
   const card = Component('div', className);
 
-  const cardInfo = await CardInfo(state);
+  const cardInfo = CardInfo(state);
 
   const cardChildren = [
     CardBgImage('card__bg-image', state),
@@ -153,8 +122,7 @@ const ExpandGalleryBtn = (className, text, handler) => {
   return btn;
 };
 
-const CardInfo = async (state) => {
-  await getRoverInfo(state);
+const CardInfo = (state) => {
   const { currentRover } = state;
   const { formattedEntries } = state.currentRoverData;
 
@@ -216,7 +184,6 @@ const ImageOfTheDay = (apod) => {
 
 // ------------------------------------------------------  API CALLS
 
-// Example API call
 const getImageOfTheDay = (state) => {
   let { apod } = state;
   fetch(`http://localhost:3000/apod`)
@@ -224,16 +191,11 @@ const getImageOfTheDay = (state) => {
     .then((apod) => updateStore(store, { apod }));
 };
 
-const getRoverInfo = async (state) => {
-  // const cache = {}; // to memoize previously called rovers
-
-  const { currentRover: r } = state;
-  const updatedStore = store; // TODO: this should be state not store
-
-  const reqRoute = `http://localhost:3000/rover-info/${r.toLowerCase()}`;
-  await fetch(reqRoute)
+const getRoverInfo = async (rover) => {
+  const reqRoute = `http://localhost:3000/rover-info/${rover.toLowerCase()}`;
+  return await fetch(reqRoute)
     .then((raw) => raw.json())
-    .then((parsed) => (updatedStore.currentRoverData = parsed));
-
-  updateStore(store, updatedStore);
+    .then((parsed) => parsed);
 };
+
+updateRover('Curiosity');

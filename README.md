@@ -8,8 +8,6 @@
 
 - Once they have selected a rover, they will be able to view a gallery of recent images taken by that rover, as well as some additional information about the rover and its mission.
 
-- I have used this project as an opportunity to practice various functional JS techniques.
-
 ### Run on your local machine
 
 1. Get the code
