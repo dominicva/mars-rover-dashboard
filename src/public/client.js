@@ -48,9 +48,11 @@ store.currentRoverData = RoverData(store);
 const updateRover = async (rover) => {
   store.previousRover = store.currentRover;
   store.currentRover = rover;
+
   const prevIndex = store.rovers.indexOf(store.previousRover);
   const newIndex = store.rovers.indexOf(store.currentRover);
   const currentCard = document.querySelector('.card');
+
   if (currentCard) {
     if (newIndex > prevIndex) {
       currentCard.style.transform = 'translateX(-60rem)';
