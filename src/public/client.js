@@ -18,6 +18,9 @@ const append = (parent, child) => {
 };
 
 const reduce = (arr, reducer, accum) => {
+  if (!Array.isArray(arr)) throw new Error('arr argument type must be array');
+  if (typeof reducer != 'function')
+    throw new Error('reducer argument type must be function');
   let i = 0;
   if (!accum) accum = arr[i++];
   for (i; i < arr.length; i++) {
