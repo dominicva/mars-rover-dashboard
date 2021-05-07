@@ -79,7 +79,8 @@ main {
   border-radius: 1rem;
   padding-bottom: 1rem;
   transform: translateX(0);
-  transition: transform 0.5s ease-out;
+  transition: transform 0.4s ease-in;
+  will-change: transform;
 }
 
 .card * {
@@ -161,7 +162,7 @@ footer {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-60rem);
+    transform: translateX(-120vw);
   }
 }
 
@@ -170,6 +171,6 @@ footer {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(60rem);
+    transform: translateX(120vw);
   }
 }

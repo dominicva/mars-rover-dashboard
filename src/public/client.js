@@ -55,9 +55,9 @@ const updateRover = async (rover) => {
 
   if (currentCard) {
     if (newIndex > prevIndex) {
-      currentCard.style.transform = 'translateX(-60rem)';
+      currentCard.style.transform = 'translateX(-120vw)';
     } else if (newIndex < prevIndex) {
-      currentCard.style.transform = 'translateX(60rem)';
+      currentCard.style.transform = 'translateX(120vw)';
     }
   }
 
@@ -119,9 +119,9 @@ const Card = (className, state) => {
   const card = Component('div', className);
 
   if (newIndex > prevIndex) {
-    card.style.animation = 'animate-right 0.3s ease-out 1 reverse';
+    card.style.animation = 'animate-right 0.4s ease-in 1 reverse';
   } else if (newIndex < prevIndex) {
-    card.style.animation = 'animate-left 0.3s ease-out 1 reverse';
+    card.style.animation = 'animate-left 0.4s ease-in 1 reverse';
   }
 
   const cardInfo = CardInfo(state);
