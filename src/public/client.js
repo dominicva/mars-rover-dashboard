@@ -49,16 +49,16 @@ const updateRover = async (rover) => {
   render(root, store);
 };
 
-const render = async (root, state) => {
-  const app = await App(state);
+const render = (root, state) => {
+  const app = App(state);
   clearDomEl(root);
   return reduce(app, append, root);
 };
 
-const App = async (state) => [
+const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
-  await Card('card', state),
+  Card('card', state),
 ];
 
 // window.addEventListener('load', () => {
