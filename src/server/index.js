@@ -31,7 +31,10 @@ const parseKey = (key) => {
   return upperFirstChar(key);
 };
 
+const formatEntries = (o, cb) => Object.entries(o).map(cb);
+
 // ------------------------------------------------------  API CALLS
+
 app.get('/rover-info/:rover', async (req, res) => {
   const rover = req.params.rover;
   const manifestsEndpoint = `https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}/?api_key=${process.env.API_KEY}`;
@@ -55,21 +58,21 @@ app.get('/rover-info/:rover', async (req, res) => {
           status,
           lastPhotoDate,
         };
-        const entries = Object.entries(o);
-        const formatted = entries.map((entry) => {
+
+        o.formattedEntries = formatEntries(o, (entry) => {
           entry[0] = parseKey(entry[0]);
           return entry;
         });
-        o.formattedEntries = formatted;
+
         return o;
       });
+
     res.send(info);
   } catch (error) {
     console.log(error);
   }
 });
 
-// example API call
 app.get('/apod', async (req, res) => {
   try {
     let image = await fetch(
@@ -81,4 +84,4 @@ app.get('/apod', async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`Mars rover app listening on port ${port}`));

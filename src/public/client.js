@@ -21,7 +21,7 @@ const updateStore = (state, newState) =>
 
 const render = async (root, state) => {
   const app = await App(state);
-  clearLoading();
+  clearDomEl(root);
   return reduce(app, append, root);
 };
 
@@ -51,7 +51,7 @@ const reduce = (arr, reducer, accum) => {
   return accum;
 };
 
-const clearLoading = () => (root.innerHTML = '');
+const clearDomEl = (el) => (el.innerHTML = '');
 
 // ------------------------------------------------------  COMPONENTS
 
@@ -62,15 +62,18 @@ const Component = (tag, className, innerHtml) => {
   return domEl;
 };
 
+// ------------------------------------------------------  MAIN HEADING
+
 const MainHeading = (className, { title }) => Component('h1', className, title);
 
-const NavItem = (className, rover) => Component('li', className, rover);
+// ------------------------------------------------------  NAV
 
 const Nav = (className, state, handler) => {
   const { rovers } = state;
 
   const nav = Component('nav', className);
   const navList = Component('ul');
+  console.log(state);
   navList.addEventListener('click', (e) => handler(e));
   append(nav, navList);
 
@@ -79,13 +82,32 @@ const Nav = (className, state, handler) => {
   return nav;
 };
 
+const NavItem = (className, rover) => Component('li', className, rover);
+
 const navHandler = (e) => {
-  const clickedRover = e.target.textContent;
+  const clickedRoverName = e.target.textContent;
+
   const updatedStore = store;
-  updatedStore.currentRover.name = clickedRover;
+  updatedStore.currentRover.name = clickedRoverName;
 
   updateStore(store, updatedStore);
   render(root, store);
+};
+
+// ------------------------------------------------------  CARD
+
+const Card = async (className, state) => {
+  const card = Component('div', className);
+
+  const cardInfo = await CardInfo(state);
+
+  const cardChildren = [
+    CardBgImage('card__bg-image', state),
+    ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
+    cardInfo,
+  ];
+
+  return reduce(cardChildren, append, card);
 };
 
 const CardBgImage = (className, state) => {
@@ -135,20 +157,6 @@ const CardInfo = async (state) => {
   return cardInfo;
 };
 
-const Card = async (className, state) => {
-  const card = Component('div', className);
-
-  const cardInfo = await CardInfo(state);
-
-  const cardChildren = [
-    CardBgImage('card__bg-image', state),
-    ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
-    cardInfo,
-  ];
-
-  return reduce(cardChildren, append, card);
-};
-
 const Gallery = (state) => {};
 
 // Example of a pure function that renders infomation requested from the backend
@@ -188,13 +196,15 @@ const getImageOfTheDay = (state) => {
 };
 
 const getRoverInfo = async (state) => {
+  const cache = {}; // to memoize previously called rovers
+
   const { name: rover } = state.currentRover;
+  const updatedStore = store;
 
   const reqRoute = `http://localhost:3000/rover-info/${rover.toLowerCase()}`;
-  const data = await fetch(reqRoute).then((raw) => raw.json());
-
-  const updatedStore = store;
-  updatedStore.currentRover = data;
+  await fetch(reqRoute)
+    .then((raw) => raw.json())
+    .then((parsed) => (updatedStore.currentRover = parsed));
 
   updateStore(store, updatedStore);
 };
