@@ -1,17 +1,33 @@
 'use strict';
 
+// let store = {
+//   title: 'Mars Rover Dashboard',
+//   apod: '',
+//   rovers: ['Curiosity', 'Opportunity', 'Spirit'],
+//   currentRover: {
+//     name: 'Curiosity',
+//     landingDate: undefined,
+//     launchDate: undefined,
+//     status: undefined,
+//     lastPhotoDate: undefined,
+//     formattedEntries: [],
+//   },
+// };
+
 let store = {
   title: 'Mars Rover Dashboard',
   apod: '',
   rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-  currentRover: {
-    name: 'Curiosity',
-    landingDate: undefined,
-    launchDate: undefined,
-    status: undefined,
-    lastPhotoDate: undefined,
-    formattedEntries: [],
-  },
+  currentRover: 'Spirit',
+};
+
+store.currentRoverData = {
+  currIdx: store.rovers.indexOf(store.currentRover),
+  landingDate: undefined,
+  launchDate: undefined,
+  status: undefined,
+  lastPhotoDate: undefined,
+  formattedEntries: [],
 };
 
 const root = document.getElementById('root');
@@ -73,7 +89,6 @@ const Nav = (className, state, handler) => {
 
   const nav = Component('nav', className);
   const navList = Component('ul');
-  console.log(state);
   navList.addEventListener('click', (e) => handler(e));
   append(nav, navList);
 
@@ -85,10 +100,10 @@ const Nav = (className, state, handler) => {
 const NavItem = (className, rover) => Component('li', className, rover);
 
 const navHandler = (e) => {
-  const clickedRoverName = e.target.textContent;
+  const clickedRover = e.target.textContent;
 
   const updatedStore = store;
-  updatedStore.currentRover.name = clickedRoverName;
+  updatedStore.currentRover = clickedRover;
 
   updateStore(store, updatedStore);
   render(root, store);
@@ -111,9 +126,9 @@ const Card = async (className, state) => {
 };
 
 const CardBgImage = (className, state) => {
-  const { name: rover } = state.currentRover;
+  const { currentRover: r } = state;
   const img = Component('div', className);
-  img.style = `background-image: url('./assets/media/${rover.toLowerCase()}.jpeg');`;
+  img.style = `background-image: url('./assets/media/${r.toLowerCase()}.jpeg');`;
   return img;
 };
 
@@ -127,6 +142,9 @@ const ExpandGalleryBtn = (className, text, handler) => {
 
 const CardInfo = async (state) => {
   await getRoverInfo(state);
+  const {  } = ;
+  
+  
   const { name, formattedEntries } = state.currentRover;
 
   const cardInfo = Component('div', 'card__info');

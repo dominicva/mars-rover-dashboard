@@ -43,12 +43,14 @@ app.get('/rover-info/:rover', async (req, res) => {
     const info = await fetch(manifestsEndpoint)
       .then((raw) => raw.json())
       .then((parsed) => {
+        console.log(parsed);
         const {
           name,
           landing_date: landingDate,
           launch_date: launchDate,
           status,
           max_date: lastPhotoDate,
+          total_photos: totalPhotos,
         } = parsed.photo_manifest;
 
         const o = {
@@ -57,6 +59,7 @@ app.get('/rover-info/:rover', async (req, res) => {
           launchDate,
           status,
           lastPhotoDate,
+          totalPhotos,
         };
 
         o.formattedEntries = formatEntries(o, (entry) => {
