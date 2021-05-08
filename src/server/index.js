@@ -77,11 +77,11 @@ const GalleryBtn = (className) => `
     </button>
   `;
 
-const InfoHeading = (labelClass, headingClass, roverName) => `
+const InfoHeading = (labelClass, headingClass, data) => `
     <label 
       class="${labelClass}"
-    >Name
-      <h2 class="${headingClass}">${roverName}</h2>
+    >${data[0]}
+      <h2 class="${headingClass}">${data[1]}</h2>
     </label>
   `;
 
@@ -94,8 +94,12 @@ const InfoItem = (labelClass, itemClass, data) => `
   `;
 
 const CardInfo = (data) => {
-  const { name, formattedEntries } = data;
-  const starter = InfoHeading('card__label', 'card__info-heading', name);
+  const { formattedEntries } = data;
+  const starter = InfoHeading(
+    'card__label',
+    'card__info-heading',
+    formattedEntries[0]
+  );
 
   return formattedEntries.slice(1).reduce((accum, entry) => {
     return accum + InfoItem('card__label', 'card__entry', entry);
