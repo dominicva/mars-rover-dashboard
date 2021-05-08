@@ -31,6 +31,21 @@ const reduce = (arr, reducer, accum) => {
 
 const clearDomEl = (el) => (el.innerHTML = '');
 
+const cardAnimate = (currCard) => {
+  const prevIdx = store.rovers.indexOf(store.previousRover);
+  const newIdx = store.rovers.indexOf(store.currentRover);
+  if (newIdx > prevIdx) {
+    currCard.style.transform = 'translateX(-120vw)';
+  } else if (newIdx < prevIdx) {
+    currCard.style.transform = 'translateX(120vw)';
+  }
+};
+
+const handleCardAnimation = () => {
+  const currentCard = document.querySelector('.card');
+  if (currentCard) cardAnimate(currentCard);
+};
+
 // ------------------------------------------------------  STATE STORAGE
 
 let store = {
@@ -49,17 +64,8 @@ const updateRover = async (rover) => {
   store.previousRover = store.currentRover;
   store.currentRover = rover;
 
-  const prevIndex = store.rovers.indexOf(store.previousRover);
-  const newIndex = store.rovers.indexOf(store.currentRover);
-  const currentCard = document.querySelector('.card');
+  handleCardAnimation();
 
-  if (currentCard) {
-    if (newIndex > prevIndex) {
-      currentCard.style.transform = 'translateX(-120vw)';
-    } else if (newIndex < prevIndex) {
-      currentCard.style.transform = 'translateX(120vw)';
-    }
-  }
   const data = await getRoverInfo(rover);
   store.currentRoverData = Object.assign(RoverData(store), data);
 
