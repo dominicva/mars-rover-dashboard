@@ -35,11 +35,13 @@ const formatEntries = (o, cb) => Object.entries(o).map(cb);
 
 const parseRoverData = (raw) => {
   return raw.json().then((parsed) => {
+    // console.log(parsed);
     const {
       name,
       landing_date: landingDate,
       launch_date: launchDate,
       status,
+      max_sol,
       max_date: lastPhotoDate,
       total_photos: totalPhotos,
     } = parsed.photo_manifest;
@@ -57,6 +59,8 @@ const parseRoverData = (raw) => {
       entry[0] = parseKey(entry[0]);
       return entry;
     });
+
+    o.maxSol = max_sol;
 
     return o;
   });
@@ -131,15 +135,40 @@ const Card = (data) =>
 
 // ------------------------------------------------------  API CALLS
 
+const API_KEY = process.env.API_KEY;
+
 app.get('/rover-info/:rover', async (req, res) => {
   const rover = req.params.rover;
-  const manifestsEndpoint = `https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}/?api_key=${process.env.API_KEY}`;
+  const manifestsEndpoint = `https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}/?api_key=${API_KEY}`;
 
   try {
     const data = await fetch(manifestsEndpoint).then((raw) =>
       parseRoverData(raw)
     );
     data.card = Card(data);
+    res.send(data);
+  } catch (error) {
+    console.log('Something went wrong fetching rover data', error);
+  }
+});
+
+//api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=2015-6-3&api_key=DEMO_KEY
+
+app.get('/rover-photos/:rover/:sol', async (req, res) => {
+  const { rover, sol } = req.params;
+  // console.log(rover, sol);
+  const photosEndpoint = `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?sol=${sol}&api_key=${API_KEY}`;
+  try {
+    const data = await fetch(photosEndpoint)
+      .then((raw) => raw.json())
+      .then((parsed) => {
+        console.log('PHOTOS RES', parsed);
+        // console.log('PHOTOS DATA ROVER LENGTH', parsed.photos.length);
+        // console.log('PHOTOS DATA ROVER', parsed.photos[0].rover);
+        // console.log('PHOTOS DATA CAMERA', parsed.photos[0].camera[1]);
+        return parsed;
+      });
+    // data.card = Card(data);
     res.send(data);
   } catch (error) {
     console.log('Something went wrong fetching rover data', error);

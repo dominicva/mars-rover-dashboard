@@ -81,7 +81,7 @@ const render = (root, state) => {
 const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
-  Card('card', state),
+  Card('card', state, galleryBtnHandler),
 ];
 
 window.addEventListener('load', () => {
@@ -104,7 +104,7 @@ const Nav = (className, state, handler) => {
 
   const nav = Component('nav', className);
   const navList = Component('ul');
-  navList.addEventListener('click', (e) => handler(e));
+  navList.addEventListener('click', handler);
   append(nav, navList);
 
   rovers.forEach((rover) => append(navList, NavItem('nav-item', rover)));
@@ -120,13 +120,15 @@ const NavItem = (className, rover) => {
 
 const navHandler = async (e) => await updateRover(e.target.textContent);
 
-const Card = (className, state) => {
+const Card = (className, state, handler) => {
   const { previousRover } = state;
   const prevIndex = state.rovers.indexOf(previousRover);
   const { index: newIndex } = state.currentRoverData;
   const { card: cardInnerHtml } = state.currentRoverData;
 
   const card = Component('div', className, cardInnerHtml);
+  const galleryBtn = card.querySelector('.card__gallery-btn');
+  galleryBtn.addEventListener('click', handler);
 
   if (newIndex > prevIndex) {
     card.style.animation = 'animate-right 0.4s ease-in 1 reverse';
@@ -135,6 +137,10 @@ const Card = (className, state) => {
   }
 
   return card;
+};
+
+const galleryBtnHandler = async (e) => {
+  const photos = await fetch();
 };
 
 const Gallery = (state) => {};
@@ -178,3 +184,15 @@ const getRoverInfo = async (rover) => {
   const route = `http://localhost:3000/rover-info/${rover.toLowerCase()}`;
   return await fetch(route).then((raw) => raw.json());
 };
+
+const getRoverPhotos = (rover, sol) => {
+  const route = `http://localhost:3000/rover-photos/${rover.toLowerCase()}/${sol}`;
+  const data = fetch(route)
+    .then((raw) => raw.json())
+    .then((parsed) => console.log(parsed));
+};
+
+setTimeout(
+  () => getRoverPhotos('Curiosity', store.currentRoverData.maxSol),
+  1000
+);
