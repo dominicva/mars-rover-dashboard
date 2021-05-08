@@ -62,7 +62,8 @@ const parseRoverData = (raw) => {
   });
 };
 
-// CARD COMPONENT GENERATED HERE ON BACKEND
+// ------------------------------------------------------ COMPONENTS
+
 const Component = (tag, className, attribute, innerHtml) => {
   return `
     <${tag} 
@@ -79,27 +80,29 @@ const BgImage = (className, data) =>
     value: `background-image: url(./assets/media/${data.name.toLowerCase()}.jpeg);`,
   });
 
-const GalleryBtn = (className) => `
-    <button class="${className}">
-      <i class="material-icons">add</i>Expand gallery
-    </button>
-  `;
+const GalleryBtn = (className) =>
+  Component(
+    'button',
+    className,
+    undefined,
+    '<i class="material-icons">add</i>Expand gallery'
+  );
 
-const InfoHeading = (labelClass, headingClass, data) => `
-    <label 
-      class="${labelClass}"
-    >${data[0]}
-      <h2 class="${headingClass}">${data[1]}</h2>
-    </label>
-  `;
+const InfoHeading = (labelClass, headingClass, data) =>
+  Component(
+    'label',
+    labelClass,
+    undefined,
+    `${data[0]}<h2 class="${headingClass}">${data[1]}</h2>`
+  );
 
-const InfoItem = (labelClass, itemClass, data) => `
-    <label 
-      class="${labelClass}"
-    >${data[0]}
-      <li class="${itemClass}">${data[1]}</li>
-    </label>
-  `;
+const InfoItem = (labelClass, itemClass, data) =>
+  Component(
+    'label',
+    labelClass,
+    undefined,
+    `${data[0]}<li class="${itemClass}">${data[1]}</li>`
+  );
 
 const CardInfo = (data) => {
   const { formattedEntries } = data;
@@ -136,7 +139,6 @@ app.get('/rover-info/:rover', async (req, res) => {
     const data = await fetch(manifestsEndpoint).then((raw) =>
       parseRoverData(raw)
     );
-    console.log(data);
     data.card = Card(data);
     res.send(data);
   } catch (error) {

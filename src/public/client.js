@@ -61,7 +61,6 @@ const updateRover = async (rover) => {
     }
   }
   const data = await getRoverInfo(rover);
-  console.log('data', data);
   store.currentRoverData = Object.assign(RoverData(store), data);
 
   render(root, store);
@@ -86,11 +85,6 @@ window.addEventListener('load', () => {
 // ------------------------------------------------------  COMPONENTS
 
 const Component = (tag, className, innerHtml) => {
-  // return `
-  //   <${tag} class="${className ? className : ''}"
-  //   >${innerHtml ? innerHtml : ''}
-  //   </${tag}
-  // `;
   const domEl = document.createElement(tag);
   if (className) domEl.className = className;
   if (innerHtml) domEl.innerHTML = innerHtml;
@@ -121,12 +115,9 @@ const NavItem = (className, rover) => {
 const navHandler = async (e) => await updateRover(e.target.textContent);
 
 const Card = (className, state) => {
-  // TODO: refactor so here we only create parent card el and insert
-  // template literal from backend response as the innerHTML
   const { previousRover } = state;
   const prevIndex = state.rovers.indexOf(previousRover);
   const { index: newIndex } = state.currentRoverData;
-
   const { card: cardInnerHtml } = state.currentRoverData;
 
   const card = Component('div', className, cardInnerHtml);
@@ -137,63 +128,7 @@ const Card = (className, state) => {
     card.style.animation = 'animate-left 0.4s ease-in 1 reverse';
   }
 
-  // const cardInfo = CardInfo(state);
-
-  // const cardChildren = [
-  //   CardBgImage('card__bg-image', state),
-  //   ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
-  //   cardInfo,
-  // ];
-
-  // return reduce(cardChildren, append, card);
   return card;
-};
-
-const CardBgImage = (className, state) => {
-  const { currentRover: r } = state;
-  const img = Component('div', className);
-  img.style = `background-image: url('./assets/media/${r.toLowerCase()}.jpeg');`;
-  return img;
-};
-
-const ExpandGalleryBtn = (className, text, handler) => {
-  const btn = Component('button', className, text);
-  const icon = Component('i', 'material-icons', 'add');
-  btn.prepend(icon);
-  btn.addEventListener('click', (e) => handler(e));
-  return btn;
-};
-
-const CardInfo = (state) => {
-  const { currentRover } = state;
-  const { formattedEntries } = state.currentRoverData;
-
-  const cardInfo = Component('div', 'card__info');
-
-  const roverTitle = Component(
-    'label',
-    'card__label',
-    `Name<h2 class="card__info-heading">${currentRover}</h2>`
-  );
-
-  append(cardInfo, roverTitle);
-
-  const statsContainer = Component('ul', 'card__stats-container');
-
-  formattedEntries
-    .slice(1) // don't need formattedEntries[0] -> rover title handled above
-    .map((entry) =>
-      Component(
-        'label',
-        'card__label',
-        `${entry[0]}<li class="card__entry">${entry[1]}</li>`
-      )
-    )
-    .forEach((el) => append(statsContainer, el));
-
-  append(cardInfo, statsContainer);
-
-  return cardInfo;
 };
 
 const Gallery = (state) => {};
