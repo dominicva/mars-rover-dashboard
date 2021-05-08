@@ -60,8 +60,9 @@ const updateRover = async (rover) => {
       currentCard.style.transform = 'translateX(120vw)';
     }
   }
-
+  // TODO: html template literal for card to be included in response
   const data = await getRoverInfo(rover);
+  console.log('data', data);
   store.currentRoverData = Object.assign(RoverData(store), data);
 
   render(root, store);
@@ -80,7 +81,7 @@ const App = (state) => [
 ];
 
 window.addEventListener('load', () => {
-  updateRover('Curiosity');
+  updateRover(store.currentRover);
 });
 
 // ------------------------------------------------------  COMPONENTS
@@ -116,6 +117,8 @@ const NavItem = (className, rover) => {
 const navHandler = async (e) => await updateRover(e.target.textContent);
 
 const Card = (className, state) => {
+  // TODO: refactor so here we only create parent card el and insert
+  // template literal from backend response as the innerHTML
   const { previousRover } = state;
   const prevIndex = state.rovers.indexOf(previousRover);
   const { index: newIndex } = state.currentRoverData;
