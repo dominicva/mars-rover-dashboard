@@ -63,6 +63,16 @@ const parseRoverData = (raw) => {
 };
 
 // CARD COMPONENT GENERATED HERE ON BACKEND
+const Component = (tag, className, attribute, innerHtml) => {
+  return `
+    <${tag} 
+      class="${className ? className : ''}"
+      ${attribute ? `${attribute.name}="${attribute.value}"` : ``}
+    >${innerHtml ? innerHtml : ''}
+    </${tag}
+  `;
+};
+
 const BgImage = (className, data) => `
     <div 
       class="${className}" 
@@ -93,17 +103,23 @@ const InfoItem = (labelClass, itemClass, data) => `
     </label>
   `;
 
+const InfoItemsContainer = (className) => {};
+
 const CardInfo = (data) => {
   const { formattedEntries } = data;
-  const starter = InfoHeading(
-    'card__label',
-    'card__info-heading',
-    formattedEntries[0]
-  );
+  const start = `
+    <div class="card__info">
+      ${InfoHeading('card__label', 'card__info-heading', formattedEntries[0])}
+      <div class="card__info-items-container">
+    `;
 
-  return formattedEntries.slice(1).reduce((accum, entry) => {
-    return accum + InfoItem('card__label', 'card__entry', entry);
-  }, starter);
+  const middle = formattedEntries.slice(1).reduce((accum, entry) => {
+    return accum + InfoItem('card__label', 'card__info-item', entry);
+  }, start);
+
+  const end = middle + `</div></div>`;
+
+  return end;
 };
 
 const Card = (data) =>

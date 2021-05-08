@@ -60,7 +60,6 @@ const updateRover = async (rover) => {
       currentCard.style.transform = 'translateX(120vw)';
     }
   }
-  // TODO: html template literal for card to be included in response
   const data = await getRoverInfo(rover);
   console.log('data', data);
   store.currentRoverData = Object.assign(RoverData(store), data);
@@ -87,6 +86,11 @@ window.addEventListener('load', () => {
 // ------------------------------------------------------  COMPONENTS
 
 const Component = (tag, className, innerHtml) => {
+  // return `
+  //   <${tag} class="${className ? className : ''}"
+  //   >${innerHtml ? innerHtml : ''}
+  //   </${tag}
+  // `;
   const domEl = document.createElement(tag);
   if (className) domEl.className = className;
   if (innerHtml) domEl.innerHTML = innerHtml;
@@ -123,7 +127,9 @@ const Card = (className, state) => {
   const prevIndex = state.rovers.indexOf(previousRover);
   const { index: newIndex } = state.currentRoverData;
 
-  const card = Component('div', className);
+  const { card: cardInnerHtml } = state.currentRoverData;
+
+  const card = Component('div', className, cardInnerHtml);
 
   if (newIndex > prevIndex) {
     card.style.animation = 'animate-right 0.4s ease-in 1 reverse';
@@ -131,15 +137,16 @@ const Card = (className, state) => {
     card.style.animation = 'animate-left 0.4s ease-in 1 reverse';
   }
 
-  const cardInfo = CardInfo(state);
+  // const cardInfo = CardInfo(state);
 
-  const cardChildren = [
-    CardBgImage('card__bg-image', state),
-    ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
-    cardInfo,
-  ];
+  // const cardChildren = [
+  //   CardBgImage('card__bg-image', state),
+  //   ExpandGalleryBtn('card__gallery-btn', 'Expand gallery'),
+  //   cardInfo,
+  // ];
 
-  return reduce(cardChildren, append, card);
+  // return reduce(cardChildren, append, card);
+  return card;
 };
 
 const CardBgImage = (className, state) => {

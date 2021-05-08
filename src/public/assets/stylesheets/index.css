@@ -123,14 +123,14 @@ main {
   font-weight: 600;
 }
 
-.card__stats-container {
+.card__info-items-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
 
-.card__entry {
+.card__info-item {
   font-size: 1.2rem;
   font-weight: 600;
   letter-spacing: 0.25px;
