@@ -69,17 +69,15 @@ const Component = (tag, className, attribute, innerHtml) => {
       class="${className ? className : ''}"
       ${attribute ? `${attribute.name}="${attribute.value}"` : ``}
     >${innerHtml ? innerHtml : ''}
-    </${tag}
+    </${tag}>
   `;
 };
 
-const BgImage = (className, data) => `
-    <div 
-      class="${className}" 
-      style="background-image: url('./assets/media/${data.name.toLowerCase()}.jpeg');"
-    >
-    </div>
-  `;
+const BgImage = (className, data) =>
+  Component('div', className, {
+    name: 'style',
+    value: `background-image: url(./assets/media/${data.name.toLowerCase()}.jpeg);`,
+  });
 
 const GalleryBtn = (className) => `
     <button class="${className}">
@@ -103,21 +101,20 @@ const InfoItem = (labelClass, itemClass, data) => `
     </label>
   `;
 
-const InfoItemsContainer = (className) => {};
-
 const CardInfo = (data) => {
   const { formattedEntries } = data;
+
   const start = `
     <div class="card__info">
       ${InfoHeading('card__label', 'card__info-heading', formattedEntries[0])}
-      <div class="card__info-items-container">
+      <ul class="card__info-items-container">
     `;
 
   const middle = formattedEntries.slice(1).reduce((accum, entry) => {
     return accum + InfoItem('card__label', 'card__info-item', entry);
   }, start);
 
-  const end = middle + `</div></div>`;
+  const end = middle + `</ul></div>`;
 
   return end;
 };
