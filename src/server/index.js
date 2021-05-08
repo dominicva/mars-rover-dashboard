@@ -71,42 +71,35 @@ const BgImage = (className, data) => `
     </div>
   `;
 
-const GalleryBtn = (className) => {
-  return `<button class="${className}">
-    <i class="material-icons">add</i>Expand gallery</button>`;
-};
+const GalleryBtn = (className) => `
+    <button class="${className}">
+      <i class="material-icons">add</i>Expand gallery
+    </button>
+  `;
 
-const InfoHeading = (labelClass, headingClass, roverName) => {
-  return `
+const InfoHeading = (labelClass, headingClass, roverName) => `
     <label 
       class="${labelClass}"
     >Name
       <h2 class="${headingClass}">${roverName}</h2>
     </label>
   `;
-};
 
-const InfoItem = (labelClass, itemClass, data) => {
-  return `
+const InfoItem = (labelClass, itemClass, data) => `
     <label 
       class="${labelClass}"
     >${data[0]}
       <li class="${itemClass}">${data[1]}</li>
     </label>
   `;
-};
 
 const CardInfo = (data) => {
   const { name, formattedEntries } = data;
+  const starter = InfoHeading('card__label', 'card__info-heading', name);
 
-  let output = InfoHeading('card__label', 'card__info-heading', name);
-
-  output = formattedEntries.slice(1).reduce((accum, entry) => {
+  return formattedEntries.slice(1).reduce((accum, entry) => {
     return accum + InfoItem('card__label', 'card__entry', entry);
-  }, output);
-  console.log('CardInfo output', output);
-
-  return output;
+  }, starter);
 };
 
 const Card = (data) =>
