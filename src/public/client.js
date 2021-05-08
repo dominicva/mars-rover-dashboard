@@ -224,8 +224,6 @@ const getImageOfTheDay = (state) => {
 };
 
 const getRoverInfo = async (rover) => {
-  const reqRoute = `http://localhost:3000/rover-info/${rover.toLowerCase()}`;
-  return await fetch(reqRoute)
-    .then((raw) => raw.json())
-    .then((parsed) => parsed);
+  const route = `http://localhost:3000/rover-info/${rover.toLowerCase()}`;
+  return await fetch(route).then((raw) => raw.json());
 };
