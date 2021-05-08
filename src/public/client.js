@@ -113,9 +113,7 @@ const NavItem = (className, rover) => {
   return navItem;
 };
 
-const navHandler = async (e) => {
-  await updateRover(e.target.textContent);
-};
+const navHandler = async (e) => await updateRover(e.target.textContent);
 
 const Card = (className, state) => {
   const { previousRover } = state;
