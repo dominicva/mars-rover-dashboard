@@ -52,8 +52,8 @@ let store = {
   title: 'Mars Rover Dashboard',
   apod: '',
   rovers: ['Perseverance', 'Curiosity', 'Opportunity', 'Spirit'],
-  currentRover: 'Perseverance',
-  previousRover: 'Perseverance',
+  currentRover: 'Curiosity',
+  previousRover: 'Curiosity',
 };
 
 store.currentRoverData = RoverData(store);

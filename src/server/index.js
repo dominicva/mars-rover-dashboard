@@ -15,6 +15,16 @@ app.use('/', express.static(path.join(__dirname, '../public')));
 
 // ------------------------------------------------------  UTILS
 
+const map = (arr, cb) => {
+  const output = [];
+  for (let i = 0; i < arr.length; i++) {
+    output.push(cb(arr[i]));
+  }
+  return output;
+};
+
+const compose = (accum, curr) => curr(accum);
+
 const upperFirstChar = (str) => str[0].toUpperCase() + str.slice(1);
 
 const parseKey = (key) => {
@@ -39,20 +49,49 @@ const parseManifest = (manifest) => {
   const o = {};
   ({
     name: o.name,
-    land_date: o.landDate,
+    landing_date: o.landDate,
     launch_date: o.launchDate,
     status: o.status,
   } = manifest);
   return o;
 };
 
-const parseCamera = (cameraResObj) => {};
+const parseCamera = (cameraResObj) => cameraResObj.full_name;
 
-const parsePhoto = (photoResObj) => {};
+const parsePhoto = (photoResObj) => {
+  const o = {};
+  console.log('photoResObj', photoResObj);
+  o.camera = parseCamera(photoResObj.camera);
+  ({ img_src: o.imgSrc, earth_date: o.earthDate } = photoResObj);
+  return o;
+};
 
-const extractPhotos = (res) => {};
+const extractPhotos = (res) => res.latest_photos;
 
-const func = (x) => {};
+const parsePhotos = (photosResArr, parser) => photosResArr.map(parser);
+
+const manifest = (res) => [extractManifest, parseManifest].reduce(compose, res);
+
+// const photos = (res) =>
+//   [extractPhotos, parsePhotos, parsePhoto].reduce(compose, res);
+
+const parseResponse = (res) => {
+  const roverManifest = manifest(res);
+  console.log('roverManifest', roverManifest);
+  const roverPhotos = parsePhotos(extractPhotos(res), parsePhoto);
+  console.log('roverPhotos', roverPhotos);
+  // const roverPhotos = photos(res);
+  const formattedEntries = formatEntries(roverManifest, (entry) => {
+    entry[0] = parseKey(entry[0]);
+    return entry;
+  });
+
+  return {
+    ...roverManifest,
+    formattedEntries,
+    photos: roverPhotos,
+  };
+};
 
 const parseRoverData = (raw) => {
   return raw.json().then((parsed) => {
@@ -166,9 +205,16 @@ app.get('/rover-info/:rover', async (req, res) => {
   const manifestsEndpoint = `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/latest_photos?api_key=${API_KEY}`;
 
   try {
-    const data = await fetch(manifestsEndpoint).then((raw) =>
-      parseRoverData(raw)
-    );
+    const data = await fetch(manifestsEndpoint)
+      .then(
+        (raw) => raw.json()
+        // parseRoverData(raw)
+      )
+      .then((data) => {
+        const res = parseResponse(data);
+        console.log('PARSED RESPONSE', res);
+        return res;
+      });
     data.card = Card(data);
     res.send(data);
   } catch (error) {
