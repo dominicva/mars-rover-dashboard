@@ -12,10 +12,11 @@ const RoverData = (state) => ({
   index: getCurrRoverIdx(state),
 });
 
-const append = (parent, child) => {
-  parent.append(child);
-  return parent;
-};
+const append = (parent, ...children) =>
+  children.reduce((accum, child) => {
+    accum.append(child);
+    return accum;
+  }, parent);
 
 const reduce = (arr, reducer, accum) => {
   if (!Array.isArray(arr)) throw new Error('arr argument type must be array');
@@ -159,6 +160,13 @@ const CancelBtn = (handler) => {
   return cancelBtn;
 };
 
+const Gallery = (className, handler) => {
+  const imageContainer = Component('div', className);
+  const image = Component('div', 'gallery__image');
+
+  append(imageContainer, image);
+};
+
 const Modal = (className, closeHandler) => {
   const btn = CancelBtn(closeHandler);
   const modal = Component('div', className);
@@ -170,8 +178,6 @@ const closeModalHandler = (e) => {
   const modal = e.target.closest('.modal');
   modal.classList.toggle('slide-in');
 };
-
-const Gallery = (state) => {};
 
 // Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {

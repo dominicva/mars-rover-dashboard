@@ -90,13 +90,21 @@ const Component = (tag, className, attribute, innerHtml) => {
   `;
 };
 
-const BgImage = (className, data) =>
+const CardBgImage = (className, data) =>
   Component('div', className, {
     name: 'style',
     value: `background-image: url(./assets/media/${data.name.toLowerCase()}.jpeg);`,
   });
 
-const GalleryBtn = (className) =>
+const GalleryBgImage = (className, imageUrl) => {
+  const img = Component('div', className, {
+    name: 'style',
+    value: `background-image: url(${imageUrl});`,
+  });
+  return img;
+};
+
+const ExpandGalleryBtn = (className) =>
   Component(
     'button',
     className,
@@ -140,8 +148,8 @@ const CardInfo = (data) => {
 
 const Card = (data) =>
   [
-    BgImage('card__bg-image', data),
-    GalleryBtn('card__gallery-btn'),
+    CardBgImage('card__bg-image', data),
+    ExpandGalleryBtn('card__gallery-btn'),
     CardInfo(data),
   ].reduce((accum, child) => accum + child, ``);
 

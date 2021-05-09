@@ -182,6 +182,9 @@ main {
   transform: scale(1.5);
 }
 
+.gallery__container {
+}
+
 footer {
   /* footer styles */
 }
