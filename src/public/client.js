@@ -83,7 +83,7 @@ const render = (root, state) => {
 const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
-  Card('card', state, galleryBtnHandler.bind(this, state)),
+  Card('card', state, expandGalleryHandler.bind(this, state)),
   Modal('modal', state, closeModalHandler),
 ];
 
@@ -98,6 +98,16 @@ const Component = (tag, className, innerHtml) => {
   if (className) domEl.className = className;
   if (innerHtml) domEl.innerHTML = innerHtml;
   return domEl;
+};
+
+const Icon = (type) => Component('i', 'material-icons', `${type}`);
+
+const Button = (className, label, handler, iconType) => {
+  const btn = Component('button', className, label);
+  if (iconType) btn.prepend(Icon(iconType));
+  if (handler) btn.addEventListener('click', handler);
+
+  return btn;
 };
 
 const MainHeading = (className, { title }) => Component('h1', className, title);
@@ -142,7 +152,7 @@ const Card = (className, state, handler) => {
   return card;
 };
 
-const galleryBtnHandler = (state) => {
+const expandGalleryHandler = (state) => {
   console.log('rover photos ', state.currentRoverData.photos);
   const modal = document.querySelector('.modal');
   modal.classList.toggle('show');
@@ -151,14 +161,8 @@ const galleryBtnHandler = (state) => {
   }, 0);
 };
 
-const CloseModalBtn = (handler) => {
-  const xIcon = Component('i', 'material-icons', 'cancel');
-  const btn = Component('button', 'modal__cancel-btn');
-  append(btn, xIcon);
-  btn.addEventListener('click', handler);
-
-  return btn;
-};
+const CloseModalBtn = (handler) =>
+  Button('modal__cancel-btn', undefined, handler, 'cancel');
 
 const GalleryHeading = (className, { currentRover }) =>
   Component('h2', className, `${currentRover}'s most recent photos`);
@@ -170,6 +174,14 @@ const GalleryBgImage = (className, imageUrl) => {
   return img;
 };
 
+const GalleryBtn = (className, direction) =>
+  Button(
+    className,
+    undefined,
+    undefined,
+    `${direction == 'back' ? 'arrow_back' : 'arrow_forward'}`
+  );
+
 const Gallery = (className, state, handler) => {
   const gallery = Component('div', className);
   const heading = GalleryHeading('gallery__heading', state);
@@ -179,7 +191,10 @@ const Gallery = (className, state, handler) => {
     state.currentRoverData.photos[0].imgSrc
   );
 
-  append(gallery, heading, image);
+  const backBtn = GalleryBtn('gallery__btn--back', 'back');
+  const forwardBtn = GalleryBtn('gallery__btn--forward', 'forward');
+
+  append(gallery, heading, image, backBtn, forwardBtn);
 
   return gallery;
 };
