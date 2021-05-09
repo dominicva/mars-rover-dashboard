@@ -183,6 +183,10 @@ main {
 }
 
 .gallery__container {
+  width: 100%;
+}
+
+.gallery__image {
 }
 
 footer {

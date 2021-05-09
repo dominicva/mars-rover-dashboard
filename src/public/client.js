@@ -145,19 +145,20 @@ const Card = (className, state, handler) => {
 const galleryBtnHandler = (state) => {
   console.log('rover photos ', state.currentRoverData.photos);
   const modal = document.querySelector('.modal');
-  modal.classList.add('show');
+  modal.classList.toggle('show');
   setTimeout(() => {
     modal.classList.toggle('slide-in');
+    // modal.classList.toggle('show');
   }, 0);
 };
 
-const CancelBtn = (handler) => {
+const CloseModalBtn = (handler) => {
   const xIcon = Component('i', 'material-icons', 'cancel');
-  const cancelBtn = Component('button', 'modal__cancel-btn');
-  append(cancelBtn, xIcon);
-  cancelBtn.addEventListener('click', handler);
+  const btn = Component('button', 'modal__cancel-btn');
+  append(btn, xIcon);
+  btn.addEventListener('click', handler);
 
-  return cancelBtn;
+  return btn;
 };
 
 const Gallery = (className, handler) => {
@@ -168,8 +169,8 @@ const Gallery = (className, handler) => {
 };
 
 const Modal = (className, closeHandler) => {
-  const btn = CancelBtn(closeHandler);
   const modal = Component('div', className);
+  const btn = CloseModalBtn(closeHandler);
   append(modal, btn);
   return modal;
 };
@@ -177,6 +178,7 @@ const Modal = (className, closeHandler) => {
 const closeModalHandler = (e) => {
   const modal = e.target.closest('.modal');
   modal.classList.toggle('slide-in');
+  setTimeout(() => modal.classList.toggle('show'), 500);
 };
 
 // Example of a pure function that renders infomation requested from the backend
