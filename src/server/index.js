@@ -43,7 +43,7 @@ const parseManifest = (manifest) => {
     name: o.name,
     landing_date: o.landDate,
     launch_date: o.launchDate,
-    status: o.status,
+    status: o.missionStatus,
   } = manifest);
   return o;
 };
@@ -63,7 +63,7 @@ const extractPhotos = (res) => res.latest_photos;
 
 const parsePhotos = (photosResArr, parser) => photosResArr.map(parser);
 
-const constructFinalResponse = (res) => {
+const constructResponse = (res) => {
   const roverManifest = manifest(res);
   const roverPhotos = parsePhotos(extractPhotos(res), parsePhoto);
   const formattedEntries = formatEntries(roverManifest, (entry) => {
@@ -150,14 +150,16 @@ const Card = (data) =>
 const { API_KEY } = process.env;
 
 app.get('/rover-info/:rover', async (req, res) => {
-  const rover = req.params.rover;
-  const manifestsEndpoint = `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/latest_photos?api_key=${API_KEY}`;
+  const { rover } = req.params;
+  const url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/latest_photos?api_key=${API_KEY}`;
 
   try {
-    const data = await fetch(manifestsEndpoint)
+    const data = await fetch(url)
       .then((rawRes) => rawRes.json())
-      .then((jsRes) => constructFinalResponse(jsRes));
+      .then((jsRes) => constructResponse(jsRes));
+
     data.card = Card(data);
+
     res.send(data);
   } catch (error) {
     console.log('Something went wrong fetching rover data', error);
