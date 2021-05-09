@@ -19,13 +19,17 @@
 }
 /* -------------------  MOBILE  --------------------- */
 
+html {
+  height: 100%;
+}
+
 body {
   display: flex;
   flex-direction: column;
   font-family: var(--font-family);
   background-color: var(--primary-dark);
   color: var(--pure-white);
-  min-height: 100vh;
+  height: 100%;
 }
 
 header {
@@ -39,6 +43,10 @@ button {
 main {
   flex: 1;
   padding: 1rem 1rem 2rem 1rem;
+}
+
+#root {
+  height: 100%;
 }
 
 .main-heading {
@@ -136,6 +144,35 @@ main {
   letter-spacing: 0.25px;
 }
 
+.modal {
+  display: none; /* Hidden by default */
+  position: absolute; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: var(--primary-dark);
+  transform: translateY(100vh);
+  transition: transform 0.5s ease-out;
+  will-change: transform;
+}
+
+.show {
+  display: block;
+}
+
+.slide-in {
+  transform: translateY(0);
+}
+
+.slide-out {
+  transform: translateY(100vh);
+}
+
+.modal__cancel-btn {
+}
 footer {
   /* footer styles */
 }

@@ -83,6 +83,7 @@ const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
   Card('card', state, galleryBtnHandler.bind(this, state)),
+  Modal('modal', closeModalHandler),
 ];
 
 window.addEventListener('load', () => {
@@ -142,7 +143,28 @@ const Card = (className, state, handler) => {
 
 const galleryBtnHandler = (state) => {
   console.log('rover photos ', state.currentRoverData.photos);
+  const modal = document.querySelector('.modal');
+  modal.classList.add('show');
+  setTimeout(() => modal.classList.add('slide-in'), 0);
 };
+
+const CancelBtn = (handler) => {
+  const xIcon = Component('i', 'material-icons', 'cancel');
+  const cancelBtn = Component('button', 'modal__cancel-btn');
+  append(cancelBtn, xIcon);
+  cancelBtn.addEventListener('click', handler);
+
+  return cancelBtn;
+};
+
+const Modal = (className, closeHandler) => {
+  const btn = CancelBtn(closeHandler);
+  const modal = Component('div', className);
+  append(modal, btn);
+  return modal;
+};
+
+const closeModalHandler = (x) => {};
 
 const Gallery = (state) => {};
 
