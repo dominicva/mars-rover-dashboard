@@ -83,8 +83,8 @@ const render = (root, state) => {
 const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
-  Card('card', state, expandGalleryHandler.bind(this, state)),
-  Modal('modal', state, closeModalHandler),
+  Card('card', state, openGalleryHandler.bind(this, state)),
+  GalleryModal('modal', state, closeGalleryHandler),
 ];
 
 window.addEventListener('load', () => {
@@ -92,6 +92,8 @@ window.addEventListener('load', () => {
 });
 
 // ------------------------------------------------------  COMPONENTS
+
+// --------------------------------- BASE COMPONENTS
 
 const Component = (tag, className, innerHtml) => {
   const domEl = document.createElement(tag);
@@ -109,6 +111,8 @@ const Button = (className, label, handler, iconType) => {
 
   return btn;
 };
+
+// --------------------------------- EXTENDED COMPONENTS
 
 const MainHeading = (className, { title }) => Component('h1', className, title);
 
@@ -131,8 +135,6 @@ const NavItem = (className, rover) => {
   return navItem;
 };
 
-const navHandler = async (e) => await updateRover(e.target.textContent);
-
 const Card = (className, state, handler) => {
   const { previousRover } = state;
   const prevIndex = state.rovers.indexOf(previousRover);
@@ -152,17 +154,34 @@ const Card = (className, state, handler) => {
   return card;
 };
 
-const expandGalleryHandler = (state) => {
-  console.log('rover photos ', state.currentRoverData.photos);
-  const modal = document.querySelector('.modal');
-  modal.classList.toggle('show');
-  setTimeout(() => {
-    modal.classList.toggle('slide-in');
-  }, 0);
+const GalleryModal = (className, state, closeHandler) => {
+  const modal = Component('div', className);
+  const closeModalBtn = CloseModalBtn(closeHandler);
+  const gallery = Gallery('gallery__container', state);
+  append(modal, closeModalBtn, gallery);
+
+  return modal;
 };
 
 const CloseModalBtn = (handler) =>
   Button('modal__cancel-btn', undefined, handler, 'cancel');
+
+const Gallery = (className, state, handler) => {
+  const gallery = Component('div', className);
+  const heading = GalleryHeading('gallery__heading', state);
+
+  const image = GalleryBgImage(
+    'gallery__image',
+    state.currentRoverData.photos[0].imgSrc
+  );
+
+  const backBtn = GalleryBtn('gallery__btn--back', 'back');
+  const forwardBtn = GalleryBtn('gallery__btn--forward', 'forward');
+
+  append(gallery, heading, image, backBtn, forwardBtn);
+
+  return gallery;
+};
 
 const GalleryHeading = (className, { currentRover }) =>
   Component('h2', className, `${currentRover}'s most recent photos`);
@@ -182,39 +201,24 @@ const GalleryBtn = (className, direction) =>
     `${direction == 'back' ? 'arrow_back' : 'arrow_forward'}`
   );
 
-const Gallery = (className, state, handler) => {
-  const gallery = Component('div', className);
-  const heading = GalleryHeading('gallery__heading', state);
+// --------------------------------- EVENT HANDLERS
 
-  const image = GalleryBgImage(
-    'gallery__image',
-    state.currentRoverData.photos[0].imgSrc
-  );
+const navHandler = async (e) => await updateRover(e.target.textContent);
 
-  const backBtn = GalleryBtn('gallery__btn--back', 'back');
-  const forwardBtn = GalleryBtn('gallery__btn--forward', 'forward');
-
-  append(gallery, heading, image, backBtn, forwardBtn);
-
-  return gallery;
+const openGalleryHandler = (state) => {
+  const modal = document.querySelector('.modal');
+  modal.classList.toggle('show');
+  setTimeout(() => {
+    modal.classList.toggle('slide-in');
+  }, 0);
 };
 
-const Modal = (className, state, closeHandler) => {
-  const modal = Component('div', className);
-  const closeModalBtn = CloseModalBtn(closeHandler);
-  const gallery = Gallery('gallery__container', state);
-  append(modal, closeModalBtn, gallery);
-
-  return modal;
-};
-
-const closeModalHandler = (e) => {
+const closeGalleryHandler = (e) => {
   const modal = e.target.closest('.modal');
   modal.classList.toggle('slide-in');
   setTimeout(() => modal.classList.toggle('show'), 500);
 };
 
-// Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {
   // If image does not already exist, or it is not from today -- request it again
   const today = new Date();
