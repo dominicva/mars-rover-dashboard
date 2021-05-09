@@ -96,14 +96,6 @@ const CardBgImage = (className, data) =>
     value: `background-image: url(./assets/media/${data.name.toLowerCase()}.jpeg);`,
   });
 
-const GalleryBgImage = (className, imageUrl) => {
-  const img = Component('div', className, {
-    name: 'style',
-    value: `background-image: url(${imageUrl});`,
-  });
-  return img;
-};
-
 const ExpandGalleryBtn = (className) =>
   Component(
     'button',

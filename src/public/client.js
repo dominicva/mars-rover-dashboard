@@ -84,7 +84,7 @@ const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
   Card('card', state, galleryBtnHandler.bind(this, state)),
-  Modal('modal', closeModalHandler),
+  Modal('modal', state, closeModalHandler),
 ];
 
 window.addEventListener('load', () => {
@@ -161,17 +161,36 @@ const CloseModalBtn = (handler) => {
   return btn;
 };
 
-const Gallery = (className, handler) => {
-  const imageContainer = Component('div', className);
-  const image = Component('div', 'gallery__image');
+const GalleryHeading = (className, { currentRover }) =>
+  Component('h2', className, `Photos taken by ${currentRover}`);
 
-  append(imageContainer, image);
+const GalleryBgImage = (className, imageUrl) => {
+  const img = Component('div', className);
+  img.setAttribute('style', `background-image: url("${imageUrl}");`);
+
+  return img;
 };
 
-const Modal = (className, closeHandler) => {
+const Gallery = (className, state, handler) => {
+  const gallery = Component('div', className);
+  const heading = GalleryHeading('gallery__heading', state);
+
+  const image = GalleryBgImage(
+    'gallery__image',
+    state.currentRoverData.photos[0].imgSrc
+  );
+
+  append(gallery, heading, image);
+
+  return gallery;
+};
+
+const Modal = (className, state, closeHandler) => {
   const modal = Component('div', className);
-  const btn = CloseModalBtn(closeHandler);
-  append(modal, btn);
+  const closeModalBtn = CloseModalBtn(closeHandler);
+  const gallery = Gallery('gallery__container', state);
+  append(modal, closeModalBtn, gallery);
+
   return modal;
 };
 
