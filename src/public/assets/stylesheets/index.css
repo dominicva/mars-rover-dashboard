@@ -38,6 +38,7 @@ header {
 
 button {
   font: 400 1rem var(--font-family);
+  border-style: none;
 }
 
 main {
@@ -152,6 +153,7 @@ main {
   top: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
+  padding: 2rem 1rem;
   overflow: auto; /* Enable scroll if needed */
   background-color: var(--primary-dark);
   transform: translateY(100vh);
@@ -167,12 +169,19 @@ main {
   transform: translateY(0);
 }
 
-.slide-out {
-  transform: translateY(100vh);
+.modal__cancel-btn {
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--pure-white);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
-.modal__cancel-btn {
+.modal__cancel-btn > .material-icons {
+  transform: scale(1.5);
 }
+
 footer {
   /* footer styles */
 }

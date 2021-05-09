@@ -145,7 +145,9 @@ const galleryBtnHandler = (state) => {
   console.log('rover photos ', state.currentRoverData.photos);
   const modal = document.querySelector('.modal');
   modal.classList.add('show');
-  setTimeout(() => modal.classList.add('slide-in'), 0);
+  setTimeout(() => {
+    modal.classList.toggle('slide-in');
+  }, 0);
 };
 
 const CancelBtn = (handler) => {
@@ -164,7 +166,10 @@ const Modal = (className, closeHandler) => {
   return modal;
 };
 
-const closeModalHandler = (x) => {};
+const closeModalHandler = (e) => {
+  const modal = e.target.closest('.modal');
+  modal.classList.toggle('slide-in');
+};
 
 const Gallery = (state) => {};
 
