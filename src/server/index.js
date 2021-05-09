@@ -41,7 +41,7 @@ const parseManifest = (manifest) => {
   const o = {};
   ({
     name: o.name,
-    landing_date: o.landDate,
+    landing_date: o.landingDate,
     launch_date: o.launchDate,
     status: o.missionStatus,
   } = manifest);

@@ -148,7 +148,6 @@ const galleryBtnHandler = (state) => {
   modal.classList.toggle('show');
   setTimeout(() => {
     modal.classList.toggle('slide-in');
-    // modal.classList.toggle('show');
   }, 0);
 };
 
@@ -162,7 +161,7 @@ const CloseModalBtn = (handler) => {
 };
 
 const GalleryHeading = (className, { currentRover }) =>
-  Component('h2', className, `Photos taken by ${currentRover}`);
+  Component('h2', className, `${currentRover}'s most recent photos`);
 
 const GalleryBgImage = (className, imageUrl) => {
   const img = Component('div', className);
