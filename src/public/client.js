@@ -68,6 +68,7 @@ const updateRover = async (rover) => {
 
   const data = await getRoverInfo(rover);
   store.currentRoverData = Object.assign(RoverData(store), data);
+  console.log('store:', store);
 
   render(root, store);
 };
@@ -81,7 +82,7 @@ const render = (root, state) => {
 const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
-  Card('card', state, galleryBtnHandler),
+  Card('card', state, galleryBtnHandler.bind(this, state)),
 ];
 
 window.addEventListener('load', () => {
@@ -139,8 +140,10 @@ const Card = (className, state, handler) => {
   return card;
 };
 
-const galleryBtnHandler = async (e) => {
-  const photos = await fetch();
+const galleryBtnHandler = async (state) => {
+  const photos = await getRoverPhotos(state);
+  state.currentRoverData.photos = photos;
+  console.log(state);
 };
 
 const Gallery = (state) => {};
@@ -185,14 +188,20 @@ const getRoverInfo = async (rover) => {
   return await fetch(route).then((raw) => raw.json());
 };
 
-const getRoverPhotos = (rover, sol) => {
-  const route = `http://localhost:3000/rover-photos/${rover.toLowerCase()}/${sol}`;
-  const data = fetch(route)
-    .then((raw) => raw.json())
-    .then((parsed) => console.log(parsed));
+const getRoverPhotos = (state) => {
+  console.log('store inside getRoverPhotos', state);
+  // const { currentRover: rover } = state;
+  // if (state.currentRoverData.maxSol) {
+  //   const { maxSol: sol } = state.currentRoverData;
+  // }
+
+  // const route = `http://localhost:3000/rover-photos/${rover.toLowerCase()}/${sol}`;
+  // const data = fetch(route).then((raw) => raw.json());
+  // .then((parsed) => console.log(parsed));
+  return data;
 };
 
-setTimeout(
-  () => getRoverPhotos('Curiosity', store.currentRoverData.maxSol),
-  1000
-);
+// setTimeout(
+//   () => getRoverPhotos('Curiosity', store.currentRoverData.maxSol),
+//   1000
+// );
