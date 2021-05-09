@@ -51,9 +51,9 @@ const handleCardAnimation = () => {
 let store = {
   title: 'Mars Rover Dashboard',
   apod: '',
-  rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-  currentRover: 'Curiosity',
-  previousRover: 'Curiosity',
+  rovers: ['Perseverance', 'Curiosity', 'Opportunity', 'Spirit'],
+  currentRover: 'Perseverance',
+  previousRover: 'Perseverance',
 };
 
 store.currentRoverData = RoverData(store);
@@ -142,8 +142,9 @@ const Card = (className, state, handler) => {
 
 const galleryBtnHandler = async (state) => {
   const photos = await getRoverPhotos(state);
+  console.log('photos data in galleryBtnHandler', photos);
   state.currentRoverData.photos = photos;
-  console.log(state);
+  console.log('store after photos updated', state);
 };
 
 const Gallery = (state) => {};
@@ -189,16 +190,17 @@ const getRoverInfo = async (rover) => {
 };
 
 const getRoverPhotos = (state) => {
-  console.log('store inside getRoverPhotos', state);
-  // const { currentRover: rover } = state;
-  // if (state.currentRoverData.maxSol) {
-  //   const { maxSol: sol } = state.currentRoverData;
-  // }
+  const { currentRover: rover } = state;
+  const { maxSol } = state.currentRoverData;
+  console.log('sol inside getRoverPhotos', maxSol);
 
-  // const route = `http://localhost:3000/rover-photos/${rover.toLowerCase()}/${sol}`;
-  // const data = fetch(route).then((raw) => raw.json());
-  // .then((parsed) => console.log(parsed));
-  return data;
+  const route = `http://localhost:3000/rover-photos/${rover.toLowerCase()}/${maxSol}`;
+  return fetch(route)
+    .then((raw) => raw.json())
+    .then((parsed) => {
+      // console.log(parsed);
+      return parsed;
+    });
 };
 
 // setTimeout(
