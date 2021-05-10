@@ -91,7 +91,7 @@ const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
   Card('card', state, openGalleryHandler.bind(this, state)),
-  GalleryModal('modal', state, closeGalleryHandler),
+  Modal('modal', state, closeGalleryHandler, changePhotoHandler),
 ];
 
 window.addEventListener('load', () => {
@@ -111,11 +111,19 @@ const Component = (tag, className, innerHtml) => {
 
 const Icon = (type) => Component('i', 'material-icons', `${type}`);
 
-const Button = (className, label, handler, iconType) => {
-  const btn = Component('button', className, label);
-  if (iconType) btn.prepend(Icon(iconType));
-  if (handler) btn.addEventListener('click', handler);
-
+/**
+ * Constructor for generic DOM button element
+ * @param {string} className - CSS class
+ * @param {object} opts - options: label, handler, iconType
+ */
+const Button = (className, opts) => {
+  const btn = Component('button', className);
+  if (opts) {
+    const { label, handler, iconType } = opts;
+    if (label) btn.textContent = label;
+    if (iconType) btn.prepend(Icon(iconType));
+    if (handler) btn.addEventListener('click', handler);
+  }
   return btn;
 };
 
@@ -161,17 +169,17 @@ const Card = (className, state, handler) => {
   return card;
 };
 
-const GalleryModal = (className, state, closeHandler) => {
+const Modal = (className, state, closeHandler, imgGalleryHandler) => {
   const modal = Component('div', className);
   const closeModalBtn = CloseModalBtn(closeHandler);
-  const gallery = Gallery('gallery__container', state);
+  const gallery = Gallery('gallery__container', state, imgGalleryHandler);
   append(modal, closeModalBtn, gallery);
 
   return modal;
 };
 
 const CloseModalBtn = (handler) =>
-  Button('modal__cancel-btn', undefined, handler, 'cancel');
+  Button('modal__cancel-btn', { handler: handler, iconType: 'cancel' });
 
 const Gallery = (className, state, handler) => {
   const gallery = Component('div', className);
@@ -182,10 +190,9 @@ const Gallery = (className, state, handler) => {
     state.currentRoverData.photos[0].imgSrc
   );
 
-  const backBtn = GalleryBtn('gallery__btn--back', 'back');
-  const forwardBtn = GalleryBtn('gallery__btn--forward', 'forward');
+  const btns = GalleryBtns('gallery__btns-container', handler);
 
-  append(gallery, heading, image, backBtn, forwardBtn);
+  append(gallery, heading, image, btns);
 
   return gallery;
 };
@@ -201,12 +208,19 @@ const GalleryImage = (className, imageUrl) => {
 };
 
 const GalleryBtn = (className, direction) =>
-  Button(
-    className,
-    undefined,
-    undefined,
-    `${direction == 'back' ? 'arrow_back' : 'arrow_forward'}`
-  );
+  Button(className, {
+    iconType: `${direction == 'back' ? 'arrow_back' : 'arrow_forward'}`,
+  });
+
+const GalleryBtns = (className, handler) => {
+  const container = Component('div', className);
+  const backBtn = GalleryBtn('gallery__btn--back', 'back');
+  const forwardBtn = GalleryBtn('gallery__btn--forward', 'forward');
+  if (handler) container.addEventListener('click', handler);
+
+  append(container, backBtn, forwardBtn);
+  return container;
+};
 
 // ------------------------------------------------------  EVENT HANDLERS
 
@@ -225,6 +239,8 @@ const closeGalleryHandler = (e) => {
   modal.classList.toggle('slide-in');
   setTimeout(() => modal.classList.toggle('show'), 500);
 };
+
+const changePhotoHandler = (x) => {};
 
 const ImageOfTheDay = (apod) => {
   // If image does not already exist, or it is not from today -- request it again

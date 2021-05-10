@@ -202,9 +202,21 @@ main {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+  border-radius: 1rem;
 }
 
 .gallery__btns-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.gallery__btn--back,
+.gallery__btn--forward {
+  background-color: transparent;
+  color: var(--pure-white);
+  transform: scale(1.25);
+  margin: 0 0.1rem;
 }
 
 .image__info {
