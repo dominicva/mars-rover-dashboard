@@ -136,17 +136,15 @@ const Button = (className, opts) => {
 const MainHeading = (className, { title }) => Component('h1', className, title);
 
 const Nav = (className, state, handler) => {
-  const { rovers } = state;
-
   const nav = Component('nav', className);
-  const navList = Component('ul');
+  const navList = NavList(state);
   navList.addEventListener('click', handler);
-  append(nav, navList);
 
-  rovers.forEach((rover) => append(navList, NavItem('nav-item', rover)));
-
-  return nav;
+  return append(nav, navList);
 };
+
+const NavList = ({ rovers }) =>
+  append(Component('ul'), ...rovers.map((r) => NavItem('nav-item', r)));
 
 const NavItem = (className, rover) => {
   const navItem = Component('li', className, rover);
