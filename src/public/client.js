@@ -53,6 +53,7 @@ const handleCardAnimation = () => {
 
 const iteratePhotoIndex = (state, direction) => {
   let { currentPhotoIndex: i } = state;
+  if (i == state.currentRoverData.photos.length - 1) return;
   switch (direction) {
     case '+':
       i++;
