@@ -55,26 +55,23 @@ const parseCamera = (cameraResObj) => cameraResObj.full_name;
 const parsePhoto = (photoResObj) => {
   const o = {};
   o.camera = parseCamera(photoResObj.camera);
-  ({ img_src: o.imgSrc, earth_date: o.earthDate } = photoResObj);
+  ({ img_src: o.imgSrc, earth_date: o.earthDate, sol: o.sol } = photoResObj);
   return o;
 };
 
 const extractPhotos = (res) => res.latest_photos;
 
-const parsePhotos = (photosResArr, parser) => photosResArr.map(parser);
+const parsePhotos = (arr, parser) => arr.map(parser);
 
 const constructResponse = (res) => {
   const roverManifest = manifest(res);
-  const roverPhotos = parsePhotos(extractPhotos(res), parsePhoto);
-  const formattedEntries = formatEntries(roverManifest, (entry) => {
-    entry[0] = parseKey(entry[0]);
-    return entry;
-  });
-
   return {
     ...roverManifest,
-    formattedEntries,
-    photos: roverPhotos,
+    formattedEntries: formatEntries(roverManifest, (entry) => {
+      entry[0] = parseKey(entry[0]);
+      return entry;
+    }),
+    photos: parsePhotos(extractPhotos(res), parsePhoto),
   };
 };
 
