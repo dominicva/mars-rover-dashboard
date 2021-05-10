@@ -12,7 +12,13 @@ const RoverData = (state) => ({
   index: getCurrRoverIdx(state),
 });
 
-const append = (parent, ...children) =>
+const partial = (fn, arg) => {
+  return (...args) => {
+    return fn(arg, ...args);
+  };
+};
+
+const composeDomEls = (parent, ...children) =>
   reduce(
     children,
     (a, b) => {
@@ -110,7 +116,7 @@ const updateRover = async (rover) => {
 const render = (root, state) => {
   const app = App(state);
   clearDomEl(root);
-  return reduce(app, append, root);
+  return reduce(app, composeDomEls, root);
 };
 
 const App = (state) => [
@@ -163,14 +169,13 @@ const Button = (className, opts) => {
 const MainHeading = (className, { title }) => Component('h1', className, title);
 
 const Nav = (className, state, handler) => {
-  const nav = Component('nav', className);
   const navList = NavList(state);
   navList.addEventListener('click', handler);
-  return append(nav, navList);
+  return composeDomEls(Component('nav', className), navList);
 };
 
 const NavList = ({ rovers }) =>
-  append(Component('ul'), ...rovers.map((r) => NavItem('nav-item', r)));
+  composeDomEls(Component('ul'), ...rovers.map((r) => NavItem('nav-item', r)));
 
 const NavItem = (className, rover) => {
   const navItem = Component('li', className, rover);
@@ -179,15 +184,13 @@ const NavItem = (className, rover) => {
 };
 
 const Card = (className, state, handler) => {
-  const { previousRover } = state;
-  const prevIndex = state.rovers.indexOf(previousRover);
-  const { index: newIndex } = state.currentRoverData;
-  const { card: cardInnerHtml } = state.currentRoverData;
+  const { previousRover, rovers, currentRoverData } = state;
+  const { index: newIndex, card: cardHtml } = currentRoverData;
 
-  const card = Component('div', className, cardInnerHtml);
-  const galleryBtn = card.querySelector('.card__gallery-btn');
-  galleryBtn.addEventListener('click', handler);
+  const card = Component('div', className, cardHtml);
+  card.querySelector('.card__gallery-btn').addEventListener('click', handler);
 
+  const prevIndex = rovers.indexOf(previousRover);
   if (newIndex > prevIndex) {
     card.style.animation = 'animate-right 0.4s ease-in 1 reverse';
   } else if (newIndex < prevIndex) {
@@ -198,7 +201,7 @@ const Card = (className, state, handler) => {
 };
 
 const Modal = (className, state, closeHandler, imgGalleryHandler) =>
-  append(
+  composeDomEls(
     Component('div', className),
     CloseModalBtn(closeHandler),
     Gallery('gallery__container', state, imgGalleryHandler)
@@ -210,7 +213,7 @@ const CloseModalBtn = (handler) =>
 const Gallery = (className, state, handler) => {
   const { currentPhotoIndex: imgIdx, currentRoverData: roverData } = state;
 
-  return append(
+  return composeDomEls(
     Component('div', className),
     GalleryHeading('gallery__heading', roverData),
     GalleryImage('gallery__image', roverData.photos[imgIdx].imgSrc),
@@ -229,7 +232,7 @@ const GalleryImage = (className, imageUrl) => {
 };
 
 const GalleryBtns = (className, handler) => {
-  const container = append(
+  const container = composeDomEls(
     Component('div', className),
     GalleryBtn('gallery__btn--back', 'back'),
     GalleryBtn('gallery__btn--forward', 'forward')
@@ -247,7 +250,7 @@ const GalleryBtn = (className, direction) =>
 const ImageInfo = (className, state) => {
   const { currentPhotoIndex: i, currentRoverData: rover } = state;
 
-  return append(
+  return composeDomEls(
     Component('ul', className),
     Component(
       'label',
