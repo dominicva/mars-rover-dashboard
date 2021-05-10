@@ -4,16 +4,6 @@
 
 const root = document.getElementById('root');
 
-const idxGen = function* (arr) {
-  let i = 0;
-  while (i < arr.length && i >= 0) {
-    const direction = yield i;
-
-    if (direction == '+') i++;
-    if (direction == '-') --i;
-  }
-};
-
 const getCurrRoverIdx = (state) => {
   return state.rovers.indexOf(state.currentRover);
 };
@@ -61,6 +51,20 @@ const handleCardAnimation = () => {
   if (currentCard) cardAnimate(currentCard);
 };
 
+const iteratePhotoIndex = (state, direction) => {
+  let { currentPhotoIndex: i } = state;
+  switch (direction) {
+    case '+':
+      i++;
+      break;
+    case '-':
+      i--;
+      break;
+  }
+  if (i == -1) i = 0;
+  state.currentPhotoIndex = i;
+};
+
 // ------------------------------------------------------  STATE STORAGE
 
 let store = {
@@ -69,7 +73,7 @@ let store = {
   rovers: ['Perseverance', 'Curiosity', 'Opportunity', 'Spirit'],
   currentRover: 'Perseverance',
   previousRover: 'Perseverance',
-  galleryIdxGenerator: undefined,
+  currentPhotoIndex: 0,
 };
 
 store.currentRoverData = RoverData(store);
@@ -79,17 +83,12 @@ store.currentRoverData = RoverData(store);
 const updateRover = async (rover) => {
   store.previousRover = store.currentRover;
   store.currentRover = rover;
+  store.currentPhotoIndex = 0;
 
   handleCardAnimation();
 
   const data = await getRoverInfo(rover);
   store.currentRoverData = Object.assign(RoverData(store), data);
-
-  store.galleryIdxGenerator = idxGen(store.currentRoverData.photos, '+');
-
-  // console.log('try to iterate', store.galleryIdxGenerator.next());
-  console.log('store.galleryIdx', store.galleryIdxGenerator);
-
   console.log('store:', store);
 
   render(root, store);
@@ -105,7 +104,12 @@ const App = (state) => [
   MainHeading('main-heading', state),
   Nav('nav-container', state, navHandler),
   Card('card', state, openGalleryHandler.bind(this, state)),
-  Modal('modal', state, closeGalleryHandler, changePhotoHandler),
+  Modal(
+    'modal',
+    state,
+    closeGalleryHandler,
+    changePhotoHandler.bind(this, state)
+  ),
 ];
 
 window.addEventListener('load', () => {
@@ -194,21 +198,14 @@ const CloseModalBtn = (handler) =>
   Button('modal__cancel-btn', { handler: handler, iconType: 'cancel' });
 
 const Gallery = (className, state, handler) => {
+  const { currentPhotoIndex: imgIdx, currentRoverData: roverData } = state;
+
   const gallery = Component('div', className);
   const heading = GalleryHeading('gallery__heading', state);
-
-  const imgIndex = state.galleryIdxGenerator.next().value;
-
-  const image = GalleryImage(
-    'gallery__image',
-    state.currentRoverData.photos[imgIndex].imgSrc
-  );
-
+  const image = GalleryImage('gallery__image', roverData.photos[imgIdx].imgSrc);
   const btns = GalleryBtns('gallery__btns-container', handler);
 
-  append(gallery, heading, image, btns);
-
-  return gallery;
+  return append(gallery, heading, image, btns);
 };
 
 const GalleryHeading = (className, { currentRover }) =>
@@ -242,20 +239,19 @@ const ImageInfo = (className) => {
 
 // ------------------------------------------------------  EVENT HANDLERS
 
-const changePhotoHandler = (e) => {
+const changePhotoHandler = (state) => {
   const photo = document.querySelector('.gallery__image');
-  const direction = e.target.closest('button').matches('.gallery__btn--forward')
+  const direction = event.target
+    .closest('button')
+    .matches('.gallery__btn--forward')
     ? '+'
     : '-';
-  console.log('direction', direction);
-  const newPhotoIndex = store.galleryIdxGenerator.next(direction).value;
-  console.log('newPhotoIndex', newPhotoIndex);
-  if (newPhotoIndex == 0) {
-    document.querySelector('.gallery__btn--back').disabled = true;
-  }
-  if (newPhotoIndex >= 0) {
-    photo.style.backgroundImage = `url('${store.currentRoverData.photos[newPhotoIndex].imgSrc}')`;
-  }
+
+  iteratePhotoIndex(state, direction);
+
+  photo.style.backgroundImage = `url('${
+    state.currentRoverData.photos[state.currentPhotoIndex].imgSrc
+  }')`;
 };
 
 const navHandler = async (e) => await updateRover(e.target.textContent);
