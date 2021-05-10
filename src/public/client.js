@@ -20,10 +20,14 @@ const RoverData = (state) => ({
 });
 
 const append = (parent, ...children) =>
-  children.reduce((accum, child) => {
-    accum.append(child);
-    return accum;
-  }, parent);
+  reduce(
+    children,
+    (a, b) => {
+      a.append(b);
+      return a;
+    },
+    parent
+  );
 
 const reduce = (arr, reducer, accum) => {
   if (!Array.isArray(arr)) throw new Error('arr argument type must be array');
@@ -169,14 +173,15 @@ const Card = (className, state, handler) => {
   return card;
 };
 
-const Modal = (className, state, closeHandler, imgGalleryHandler) => {
-  const modal = Component('div', className);
-  const closeModalBtn = CloseModalBtn(closeHandler);
-  const gallery = Gallery('gallery__container', state, imgGalleryHandler);
-  append(modal, closeModalBtn, gallery);
-
-  return modal;
-};
+const Modal = (className, state, closeHandler, imgGalleryHandler) =>
+  append(
+    Component('div', className),
+    ...[
+      CloseModalBtn(closeHandler),
+      Gallery('gallery__container', state, imgGalleryHandler),
+      ImageInfo('image__info'),
+    ]
+  );
 
 const CloseModalBtn = (handler) =>
   Button('modal__cancel-btn', { handler: handler, iconType: 'cancel' });
@@ -207,11 +212,6 @@ const GalleryImage = (className, imageUrl) => {
   return img;
 };
 
-const GalleryBtn = (className, direction) =>
-  Button(className, {
-    iconType: `${direction == 'back' ? 'arrow_back' : 'arrow_forward'}`,
-  });
-
 const GalleryBtns = (className, handler) => {
   const container = Component('div', className);
   const backBtn = GalleryBtn('gallery__btn--back', 'back');
@@ -220,6 +220,17 @@ const GalleryBtns = (className, handler) => {
 
   append(container, backBtn, forwardBtn);
   return container;
+};
+
+const GalleryBtn = (className, direction) =>
+  Button(className, {
+    iconType: `${direction == 'back' ? 'arrow_back' : 'arrow_forward'}`,
+  });
+
+const ImageInfo = (className) => {
+  const section = Component('section', className);
+
+  return section;
 };
 
 // ------------------------------------------------------  EVENT HANDLERS
