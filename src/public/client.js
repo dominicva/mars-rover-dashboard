@@ -191,26 +191,28 @@ const Modal = (className, state, closeHandler, imgGalleryHandler) =>
     ...[
       CloseModalBtn(closeHandler),
       Gallery('gallery__container', state, imgGalleryHandler),
-      ImageInfo('image__info'),
+      // ImageInfo('image-info__container'),
     ]
   );
 
 const CloseModalBtn = (handler) =>
   Button('modal__cancel-btn', { handler: handler, iconType: 'cancel' });
 
-const Gallery = (className, state, handler) => {
-  const { currentPhotoIndex: imgIdx, currentRoverData: roverData } = state;
+const Gallery = (
+  className,
+  { currentPhotoIndex: imgIdx, currentRoverData: roverData },
+  handler
+) =>
+  append(
+    Component('div', className),
+    GalleryHeading('gallery__heading', roverData),
+    GalleryImage('gallery__image', roverData.photos[imgIdx].imgSrc),
+    GalleryBtns('gallery__btns-container', handler),
+    ImageInfo('image-info__container')
+  );
 
-  const gallery = Component('div', className);
-  const heading = GalleryHeading('gallery__heading', state);
-  const image = GalleryImage('gallery__image', roverData.photos[imgIdx].imgSrc);
-  const btns = GalleryBtns('gallery__btns-container', handler);
-
-  return append(gallery, heading, image, btns);
-};
-
-const GalleryHeading = (className, { currentRover }) =>
-  Component('h2', className, `${currentRover}'s most recent photos`);
+const GalleryHeading = (className, { name }) =>
+  Component('h2', className, `${name}'s most recent photos`);
 
 const GalleryImage = (className, imageUrl) => {
   const img = Component('div', className);
@@ -235,7 +237,13 @@ const GalleryBtn = (className, direction) =>
 
 const ImageInfo = (className) => {
   const section = Component('section', className);
+  const ul = Component('ul', 'image-info__container');
+
   return section;
+};
+
+const ImageInfoItems = (className, state) => {
+  return reduce();
 };
 
 // ------------------------------------------------------  EVENT HANDLERS
