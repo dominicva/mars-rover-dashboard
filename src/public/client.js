@@ -66,6 +66,18 @@ const iteratePhotoIndex = (state, direction) => {
   state.currentPhotoIndex = i;
 };
 
+const updatePhotoInfo = (state) => {
+  document.querySelector('.image-info__container').remove();
+  document
+    .querySelector('.gallery__container')
+    .append(ImageInfo('image-info__container', state));
+};
+
+const updatePhotoImage = (state) =>
+  (document.querySelector('.gallery__image').style.backgroundImage = `url('${
+    state.currentRoverData.photos[state.currentPhotoIndex].imgSrc
+  }')`);
+
 // ------------------------------------------------------  STATE STORAGE
 
 let store = {
@@ -188,31 +200,27 @@ const Card = (className, state, handler) => {
 const Modal = (className, state, closeHandler, imgGalleryHandler) =>
   append(
     Component('div', className),
-    ...[
-      CloseModalBtn(closeHandler),
-      Gallery('gallery__container', state, imgGalleryHandler),
-      // ImageInfo('image-info__container'),
-    ]
+    CloseModalBtn(closeHandler),
+    Gallery('gallery__container', state, imgGalleryHandler)
   );
 
 const CloseModalBtn = (handler) =>
   Button('modal__cancel-btn', { handler: handler, iconType: 'cancel' });
 
-const Gallery = (
-  className,
-  { currentPhotoIndex: imgIdx, currentRoverData: roverData },
-  handler
-) =>
-  append(
+const Gallery = (className, state, handler) => {
+  const { currentPhotoIndex: imgIdx, currentRoverData: roverData } = state;
+
+  return append(
     Component('div', className),
     GalleryHeading('gallery__heading', roverData),
     GalleryImage('gallery__image', roverData.photos[imgIdx].imgSrc),
     GalleryBtns('gallery__btns-container', handler),
-    ImageInfo('image-info__container')
+    ImageInfo('image-info__container', state)
   );
+};
 
-const GalleryHeading = (className, { name }) =>
-  Component('h2', className, `${name}'s most recent photos`);
+const GalleryHeading = (className, { name: rover }) =>
+  Component('h2', className, `${rover}'s most recent photos`);
 
 const GalleryImage = (className, imageUrl) => {
   const img = Component('div', className);
@@ -235,21 +243,20 @@ const GalleryBtn = (className, direction) =>
     iconType: `${direction == 'back' ? 'arrow_back' : 'arrow_forward'}`,
   });
 
-const ImageInfo = (className) => {
-  const section = Component('section', className);
-  const ul = Component('ul', 'image-info__container');
+const ImageInfo = (className, state) => {
+  const { currentPhotoIndex: i, currentRoverData: rover } = state;
 
-  return section;
-};
-
-const ImageInfoItems = (className, state) => {
-  return reduce();
+  return append(
+    Component('section', className),
+    Component('ul', 'image-info__container'),
+    Component('li', 'image-info__item', rover.photos[i].camera),
+    Component('li', 'image-info__item', rover.photos[i].earthDate)
+  );
 };
 
 // ------------------------------------------------------  EVENT HANDLERS
 
 const changePhotoHandler = (state) => {
-  const photo = document.querySelector('.gallery__image');
   const direction = event.target
     .closest('button')
     .matches('.gallery__btn--forward')
@@ -257,10 +264,8 @@ const changePhotoHandler = (state) => {
     : '-';
 
   iteratePhotoIndex(state, direction);
-
-  photo.style.backgroundImage = `url('${
-    state.currentRoverData.photos[state.currentPhotoIndex].imgSrc
-  }')`;
+  updatePhotoImage(state);
+  updatePhotoInfo(state);
 };
 
 const navHandler = async (e) => await updateRover(e.target.textContent);
