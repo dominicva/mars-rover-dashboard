@@ -4,10 +4,13 @@
 
 const root = document.getElementById('root');
 
-const indexGenerator = function* (arr) {
+const idxGen = function* (arr) {
   let i = 0;
-  while (i < arr.length) {
-    yield i++;
+  while (i < arr.length && i >= 0) {
+    const direction = yield i;
+
+    if (direction == '+') i++;
+    if (direction == '-') --i;
   }
 };
 
@@ -66,6 +69,7 @@ let store = {
   rovers: ['Perseverance', 'Curiosity', 'Opportunity', 'Spirit'],
   currentRover: 'Perseverance',
   previousRover: 'Perseverance',
+  galleryIdxGenerator: undefined,
 };
 
 store.currentRoverData = RoverData(store);
@@ -80,6 +84,12 @@ const updateRover = async (rover) => {
 
   const data = await getRoverInfo(rover);
   store.currentRoverData = Object.assign(RoverData(store), data);
+
+  store.galleryIdxGenerator = idxGen(store.currentRoverData.photos, '+');
+
+  // console.log('try to iterate', store.galleryIdxGenerator.next());
+  console.log('store.galleryIdx', store.galleryIdxGenerator);
+
   console.log('store:', store);
 
   render(root, store);
@@ -139,7 +149,6 @@ const Nav = (className, state, handler) => {
   const nav = Component('nav', className);
   const navList = NavList(state);
   navList.addEventListener('click', handler);
-
   return append(nav, navList);
 };
 
@@ -188,9 +197,11 @@ const Gallery = (className, state, handler) => {
   const gallery = Component('div', className);
   const heading = GalleryHeading('gallery__heading', state);
 
+  const imgIndex = state.galleryIdxGenerator.next().value;
+
   const image = GalleryImage(
     'gallery__image',
-    state.currentRoverData.photos[0].imgSrc
+    state.currentRoverData.photos[imgIndex].imgSrc
   );
 
   const btns = GalleryBtns('gallery__btns-container', handler);
@@ -205,8 +216,7 @@ const GalleryHeading = (className, { currentRover }) =>
 
 const GalleryImage = (className, imageUrl) => {
   const img = Component('div', className);
-  img.setAttribute('style', `background-image: url("${imageUrl}");`);
-
+  img.style.backgroundImage = `url("${imageUrl}")`;
   return img;
 };
 
@@ -214,8 +224,8 @@ const GalleryBtns = (className, handler) => {
   const container = Component('div', className);
   const backBtn = GalleryBtn('gallery__btn--back', 'back');
   const forwardBtn = GalleryBtn('gallery__btn--forward', 'forward');
-  if (handler) container.addEventListener('click', handler);
 
+  container.addEventListener('click', handler);
   append(container, backBtn, forwardBtn);
   return container;
 };
@@ -227,11 +237,26 @@ const GalleryBtn = (className, direction) =>
 
 const ImageInfo = (className) => {
   const section = Component('section', className);
-
   return section;
 };
 
 // ------------------------------------------------------  EVENT HANDLERS
+
+const changePhotoHandler = (e) => {
+  const photo = document.querySelector('.gallery__image');
+  const direction = e.target.closest('button').matches('.gallery__btn--forward')
+    ? '+'
+    : '-';
+  console.log('direction', direction);
+  const newPhotoIndex = store.galleryIdxGenerator.next(direction).value;
+  console.log('newPhotoIndex', newPhotoIndex);
+  if (newPhotoIndex == 0) {
+    document.querySelector('.gallery__btn--back').disabled = true;
+  }
+  if (newPhotoIndex >= 0) {
+    photo.style.backgroundImage = `url('${store.currentRoverData.photos[newPhotoIndex].imgSrc}')`;
+  }
+};
 
 const navHandler = async (e) => await updateRover(e.target.textContent);
 
@@ -248,8 +273,6 @@ const closeGalleryHandler = (e) => {
   modal.classList.toggle('slide-in');
   setTimeout(() => modal.classList.toggle('show'), 500);
 };
-
-const changePhotoHandler = (x) => {};
 
 const ImageOfTheDay = (apod) => {
   // If image does not already exist, or it is not from today -- request it again

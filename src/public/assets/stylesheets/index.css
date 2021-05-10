@@ -203,6 +203,17 @@ main {
   background-size: contain;
   background-repeat: no-repeat;
   border-radius: 1rem;
+  transform: translateX(0);
+  transition: transform 0.5s ease-in;
+  will-change: transform;
+}
+
+.hide {
+  display: none;
+}
+
+.img-slide-out {
+  transform: translateX(110vw);
 }
 
 .gallery__btns-container {
@@ -213,6 +224,7 @@ main {
 
 .gallery__btn--back,
 .gallery__btn--forward {
+  cursor: pointer;
   background-color: transparent;
   color: var(--pure-white);
   transform: scale(1.25);
