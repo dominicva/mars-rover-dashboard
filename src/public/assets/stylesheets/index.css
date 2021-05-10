@@ -185,13 +185,14 @@ main {
 .gallery__heading {
   max-width: 16rem;
   margin-bottom: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .gallery__container {
   height: 30rem;
   width: 100%;
   background-color: var(--primary-dark);
-  /* border: 1px solid var(--pure-white); */
   margin-top: 3rem;
 }
 
@@ -201,6 +202,12 @@ main {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+.gallery__btns-container {
+}
+
+.image__info {
 }
 
 footer {

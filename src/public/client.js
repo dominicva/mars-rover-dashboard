@@ -4,6 +4,13 @@
 
 const root = document.getElementById('root');
 
+const indexGenerator = function* (arr) {
+  let i = 0;
+  while (i < arr.length) {
+    yield i++;
+  }
+};
+
 const getCurrRoverIdx = (state) => {
   return state.rovers.indexOf(state.currentRover);
 };
@@ -170,7 +177,7 @@ const Gallery = (className, state, handler) => {
   const gallery = Component('div', className);
   const heading = GalleryHeading('gallery__heading', state);
 
-  const image = GalleryBgImage(
+  const image = GalleryImage(
     'gallery__image',
     state.currentRoverData.photos[0].imgSrc
   );
@@ -186,7 +193,7 @@ const Gallery = (className, state, handler) => {
 const GalleryHeading = (className, { currentRover }) =>
   Component('h2', className, `${currentRover}'s most recent photos`);
 
-const GalleryBgImage = (className, imageUrl) => {
+const GalleryImage = (className, imageUrl) => {
   const img = Component('div', className);
   img.setAttribute('style', `background-image: url("${imageUrl}");`);
 
@@ -201,7 +208,7 @@ const GalleryBtn = (className, direction) =>
     `${direction == 'back' ? 'arrow_back' : 'arrow_forward'}`
   );
 
-// --------------------------------- EVENT HANDLERS
+// ------------------------------------------------------  EVENT HANDLERS
 
 const navHandler = async (e) => await updateRover(e.target.textContent);
 
