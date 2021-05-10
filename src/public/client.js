@@ -229,12 +229,13 @@ const GalleryImage = (className, imageUrl) => {
 };
 
 const GalleryBtns = (className, handler) => {
-  const container = Component('div', className);
-  const backBtn = GalleryBtn('gallery__btn--back', 'back');
-  const forwardBtn = GalleryBtn('gallery__btn--forward', 'forward');
+  const container = append(
+    Component('div', className),
+    GalleryBtn('gallery__btn--back', 'back'),
+    GalleryBtn('gallery__btn--forward', 'forward')
+  );
 
   container.addEventListener('click', handler);
-  append(container, backBtn, forwardBtn);
   return container;
 };
 
