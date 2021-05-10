@@ -247,10 +247,17 @@ const ImageInfo = (className, state) => {
   const { currentPhotoIndex: i, currentRoverData: rover } = state;
 
   return append(
-    Component('section', className),
-    Component('ul', 'image-info__container'),
-    Component('li', 'image-info__item', rover.photos[i].camera),
-    Component('li', 'image-info__item', rover.photos[i].earthDate)
+    Component('ul', className),
+    Component(
+      'label',
+      'image-info__label',
+      `Camera<li class="image-info__item">${rover.photos[i].camera}</li>`
+    ),
+    Component(
+      'label',
+      'image-info__label',
+      `Earth Date<li class="image-info__item">${rover.photos[i].earthDate}</li>`
+    )
   );
 };
 

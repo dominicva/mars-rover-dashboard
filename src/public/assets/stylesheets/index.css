@@ -139,7 +139,8 @@ main {
   margin-top: 0.5rem;
 }
 
-.card__info-item {
+.card__info-item,
+.image-info__item {
   font-size: 1.2rem;
   font-weight: 600;
   letter-spacing: 0.25px;
@@ -232,9 +233,13 @@ main {
 }
 
 .image-info__container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
 }
 
-.image-info__item {
+.image-info__label {
+  margin-bottom: 1rem;
 }
 
 footer {
