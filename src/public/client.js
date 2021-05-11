@@ -9,12 +9,14 @@ const { List, Map, toJS } = Immutable;
 const root = document.getElementById('root');
 
 const getCurrRoverIdx = (state) => {
+  state = state.toJS();
   return state.rovers.indexOf(state.currentRover);
 };
 
-const RoverData = (state) => ({
-  index: getCurrRoverIdx(state),
-});
+const RoverData = (state) =>
+  Map({
+    index: getCurrRoverIdx(state),
+  });
 
 const partial = (fn, arg) => {
   return (...args) => {
@@ -47,8 +49,10 @@ const reduce = (arr, reducer, accum) => {
 const clearDomEl = (el) => (el.innerHTML = '');
 
 const cardAnimate = (currCard) => {
-  const prevIdx = store.rovers.indexOf(store.previousRover);
-  const newIdx = store.rovers.indexOf(store.currentRover);
+  // const prevIdx = store.rovers.indexOf(store.previousRover);
+  const prevIdx = store.get('rovers').indexOf(store.get('previousRover'));
+  const newIdx = store.get('rovers').indexOf(store.get('currentRover'));
+  // const newIdx = store.rovers.indexOf(store.currentRover);
   if (newIdx > prevIdx) {
     currCard.style.transform = 'translateX(-120vw)';
   } else if (newIdx < prevIdx) {
@@ -63,6 +67,8 @@ const handleCardAnimation = () => {
 
 const iteratePhotoIndex = (state, direction) => {
   let { currentPhotoIndex: i } = state;
+  // if (i == state.get('currentRoverData').get('photos').toJS().length - 1)
+  //   return;
   if (i == state.currentRoverData.photos.length - 1) return;
   switch (direction) {
     case '+':
@@ -73,46 +79,60 @@ const iteratePhotoIndex = (state, direction) => {
       break;
   }
   if (i == -1) i = 0;
+  // state = state.set('currentPhotoIndex', i);
   state.currentPhotoIndex = i;
 };
 
 const updatePhotoInfo = (state) => {
+  // state = state.toJS();
   document.querySelector('.image-info__container').remove();
   document
     .querySelector('.gallery__container')
     .append(ImageInfo('image-info__container', state));
 };
 
-const updatePhotoImage = (state) =>
-  (document.querySelector('.gallery__image').style.backgroundImage = `url('${
+const updatePhotoImage = (state) => {
+  // state = state.toJS();
+  document.querySelector('.gallery__image').style.backgroundImage = `url('${
     state.currentRoverData.photos[state.currentPhotoIndex].imgSrc
-  }')`);
+  }')`;
+};
+// .get('currentRoverData')
+// .get('photos')
+// .toJS()
+// [state.get('currentPhotoIndex')].get('imgSrc')}')`);
 
 // ------------------------------------------------------  STATE STORAGE
 
-let store = {
+let store = Map({
   title: 'Mars Rover Dashboard',
   apod: '',
   rovers: ['Perseverance', 'Curiosity', 'Opportunity', 'Spirit'],
   currentRover: 'Perseverance',
   previousRover: 'Perseverance',
   currentPhotoIndex: 0,
-};
+});
 // console.log(store);
 
-store.currentRoverData = RoverData(store);
+// store.currentRoverData = RoverData(store);
+store = store.set('currentRoverData', RoverData(store));
 
 // ------------------------------------------------------  WHERE IT ALL HAPPENS
 
 const updateRover = async (rover) => {
-  store.previousRover = store.currentRover;
-  store.currentRover = rover;
-  store.currentPhotoIndex = 0;
+  store = store
+    .set('previousRover', store.get('currentRover'))
+    .set('currentRover', rover)
+    .set('currentPhotoIndex', 0);
+  // store.previousRover = store.currentRover;
+  // store.currentRover = rover;
+  // store.currentPhotoIndex = 0;
 
   handleCardAnimation();
 
   const data = await getRoverInfo(rover);
-  store.currentRoverData = Object.assign(RoverData(store), data);
+  // store.currentRoverData = Object.assign(RoverData(store), data);
+  store = store.set('currentRoverData', RoverData(store).merge(data));
   console.log('store:', store);
 
   render(root, store);
@@ -125,19 +145,19 @@ const render = (root, state) => {
 };
 
 const App = (state) => [
-  MainHeading('main-heading', state),
-  Nav('nav-container', state, navHandler),
-  Card('card', state, openGalleryHandler.bind(this, state)),
+  MainHeading('main-heading', state.toJS()),
+  Nav('nav-container', state.toJS(), navHandler),
+  Card('card', state.toJS(), openGalleryHandler.bind(this, state.toJS())),
   Modal(
     'modal',
     state,
     closeGalleryHandler,
-    changePhotoHandler.bind(this, state)
+    changePhotoHandler.bind(this, state.toJS())
   ),
 ];
 
 window.addEventListener('load', () => {
-  updateRover(store.currentRover);
+  updateRover(store.get('currentRover'));
 });
 
 // ------------------------------------------------------  COMPONENTS
@@ -174,6 +194,7 @@ const Button = (className, opts) => {
 const MainHeading = (className, { title }) => Component('h1', className, title);
 
 const Nav = (className, state, handler) => {
+  // state = state.toJS();
   const navList = NavList(state);
   navList.addEventListener('click', handler);
   return composeDomEls(Component('nav', className), navList);
@@ -189,6 +210,9 @@ const NavItem = (className, rover) => {
 };
 
 const Card = (className, state, handler) => {
+  // state = state.toJS();
+
+  // console.log('state in CARD', state);
   const { previousRover, rovers, currentRoverData } = state;
   const { index: newIndex, card: cardHtml } = currentRoverData;
 
@@ -216,6 +240,7 @@ const CloseModalBtn = (handler) =>
   Button('modal__cancel-btn', { handler: handler, iconType: 'cancel' });
 
 const Gallery = (className, state, handler) => {
+  state = state.toJS();
   const { currentPhotoIndex: imgIdx, currentRoverData: roverData } = state;
 
   return composeDomEls(
@@ -253,6 +278,8 @@ const GalleryBtn = (className, direction) =>
   });
 
 const ImageInfo = (className, state) => {
+  console.log('state in imageInfo', state);
+  // state = state.toJS();
   const { currentPhotoIndex: i, currentRoverData: rover } = state;
 
   return composeDomEls(
@@ -335,6 +362,7 @@ const getImageOfTheDay = (state) => {
 };
 
 const getRoverInfo = async (rover) => {
+  console.log('rover in getRoverInfo', rover);
   const route = `http://localhost:3000/rover-info/${rover.toLowerCase()}`;
   return await fetch(route).then((raw) => raw.json());
 };
