@@ -3,18 +3,10 @@
 :root {
   /* COLORS */
   --primary-dark: #171717;
-  --primary-medium: #636363;
-  --primary-light: #b0b0b0;
-
   --pure-white: #fff;
 
   /* TYPOGRAPHY */
-  --h1-size: 2rem;
-  --h2-size: 1.5rem;
-  --h3-size: 1rem;
-  --body-size: var(--h3-size);
-  --label-size: var(--h3-size);
-  --small-size: 14px;
+  --label-size: 1rem;
   --font-family: 'Source Sans Pro', sans-serif;
 }
 
@@ -158,7 +150,7 @@ main {
   width: 100%;
   height: 100%;
   padding: 1.5rem 1rem;
-  overflow: auto; /* Enable scroll if needed */
+  overflow: auto;
   background-color: var(--primary-dark);
   transform: translateY(100vh);
   transition: transform 0.5s ease-out;
@@ -248,6 +240,7 @@ main {
 }
 
 /* -------------------  MODERN SMARTPHONE (width 375px+)  --------------------- */
+
 @media (min-width: 375px) {
   .main-heading {
     font-size: 2rem;
@@ -299,6 +292,7 @@ main {
 }
 
 /* -------------------  INTERMEDIATE PHONE-TABLET  --------------------- */
+
 @media (min-width: 560px) {
   .nav-container {
     margin-bottom: 2rem;
@@ -330,6 +324,7 @@ main {
 }
 
 /* -------------------  TABLET  --------------------- */
+
 @media (min-width: 768px) {
   main {
     padding: 1rem 2rem 2rem 2rem;
@@ -391,6 +386,8 @@ main {
     margin-top: 1rem;
   }
 }
+
+/* -------------------  ANIMATIONS -------------- */
 
 @keyframes animate-left {
   0% {
