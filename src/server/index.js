@@ -3,9 +3,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
 const path = require('path');
-const { ESRCH } = require('constants');
-const Immutable = require('immutable');
-const { List, Map } = Immutable;
 
 const app = express();
 const port = 3000;
@@ -164,17 +161,6 @@ app.get('/rover-info/:rover', async (req, res) => {
     res.send(data);
   } catch (error) {
     console.log('Something went wrong fetching rover data', error);
-  }
-});
-
-app.get('/apod', async (req, res) => {
-  try {
-    let image = await fetch(
-      `https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`
-    ).then((res) => res.json());
-    res.send({ image });
-  } catch (err) {
-    console.log('error:', err);
   }
 });
 
