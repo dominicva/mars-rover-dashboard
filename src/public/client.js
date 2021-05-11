@@ -8,6 +8,8 @@ const { List, Map, toJS } = Immutable;
 
 const root = document.getElementById('root');
 
+const compose = (arg, fn) => fn(arg);
+
 const composeDomEls = (parent, ...children) =>
   reduce(
     children,
@@ -68,12 +70,14 @@ const updatePhotoInfo = (state) => {
   document
     .querySelector('.gallery__container')
     .append(ImageInfo('image-info__container', state));
+  return state;
 };
 
 const updatePhotoImage = (state) => {
   document.querySelector('.gallery__image').style.backgroundImage = `url('${
     state.currentRoverData.photos[state.currentPhotoIndex].imgSrc
   }')`;
+  return state;
 };
 
 const getCurrRoverIdx = (state) => {
@@ -276,9 +280,11 @@ const changePhotoHandler = (state) => {
     ? '+'
     : '-';
 
-  iteratePhotoIndex(state, direction);
-  updatePhotoImage(state);
-  updatePhotoInfo(state);
+  return reduce(
+    [updatePhotoImage, updatePhotoInfo],
+    compose,
+    iteratePhotoIndex(state, direction)
+  );
 };
 
 const navHandler = async (e) => await updateRover(e.target.textContent);
