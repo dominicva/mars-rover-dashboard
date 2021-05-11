@@ -32,7 +32,7 @@ const parseKey = (key) => {
 
 const formatEntries = (o, cb) => Object.entries(o).map(cb);
 
-const compose = (accum, curr) => curr(accum);
+const compose = (arg, fn) => fn(arg);
 
 const extractManifest = (res) => res.latest_photos[0].rover;
 
