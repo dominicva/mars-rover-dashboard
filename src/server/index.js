@@ -143,7 +143,7 @@ const Card = (data) => {
   ].reduce((accum, child) => accum + child, ``);
 };
 
-// ------------------------------------------------------  API CALLS
+// ------------------------------------------------------  API CALL
 
 const { API_KEY } = process.env;
 
