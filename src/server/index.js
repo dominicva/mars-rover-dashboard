@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
 const path = require('path');
 const { ESRCH } = require('constants');
+const Immutable = require('immutable');
+const { List, Map } = Immutable;
 
 const app = express();
 const port = 3000;
@@ -45,6 +47,8 @@ const parseManifest = (manifest) => {
     launch_date: o.launchDate,
     status: o.missionStatus,
   } = manifest);
+  // const immutableO = Immutable.fromJS(o);
+  // console.log('Immutable manifest', immutableO._root.entries);
   return o;
 };
 
@@ -56,16 +60,19 @@ const parsePhoto = (photoResObj) => {
   const o = {};
   o.camera = parseCamera(photoResObj.camera);
   ({ img_src: o.imgSrc, earth_date: o.earthDate, sol: o.sol } = photoResObj);
+  const immutableO = Immutable.fromJS(o);
+  // console.log('Immutable parsed photo', immutableO._root.entries);
   return o;
+  // return immutableO;
 };
 
 const extractPhotos = (res) => res.latest_photos;
 
-const parsePhotos = (arr, parser) => arr.map(parser);
+const parsePhotos = (list, parser) => list.map(parser);
 
 const constructResponse = (res) => {
   const roverManifest = manifest(res);
-  return {
+  const result = {
     ...roverManifest,
     formattedEntries: formatEntries(roverManifest, (entry) => {
       entry[0] = parseKey(entry[0]);
@@ -73,6 +80,10 @@ const constructResponse = (res) => {
     }),
     photos: parsePhotos(extractPhotos(res), parsePhoto),
   };
+  const immutableResult = Map(result);
+  // console.log('Immutable response Map:', immutableResult);
+  return result;
+  // return immutableResult;
 };
 
 // ------------------------------------------------------ COMPONENTS
@@ -87,11 +98,14 @@ const Component = (tag, className, attribute, innerHtml) => {
   `;
 };
 
-const CardBgImage = (className, data) =>
-  Component('div', className, {
+const CardBgImage = (className, data) => {
+  // data = data.toJS();
+  // console.log('CARDBGIMAGE INPUT DATA', data);
+  return Component('div', className, {
     name: 'style',
     value: `background-image: url(./assets/media/${data.name.toLowerCase()}.jpeg);`,
   });
+};
 
 const ExpandGalleryBtn = (className) =>
   Component(
@@ -118,6 +132,7 @@ const InfoItem = (labelClass, itemClass, data) =>
   );
 
 const CardInfo = (data) => {
+  // data = data.toJS();
   const { formattedEntries } = data;
 
   const start = `
@@ -135,12 +150,14 @@ const CardInfo = (data) => {
   return end;
 };
 
-const Card = (data) =>
-  [
+const Card = (data) => {
+  // data = data.toJS();
+  return [
     CardBgImage('card__bg-image', data),
     ExpandGalleryBtn('card__gallery-btn'),
     CardInfo(data),
   ].reduce((accum, child) => accum + child, ``);
+};
 
 // ------------------------------------------------------  API CALLS
 

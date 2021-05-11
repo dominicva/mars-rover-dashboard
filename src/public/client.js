@@ -1,5 +1,9 @@
 'use strict';
 
+// ------------------------------------------------------  IMMUTABLE
+
+const { List, Map, toJS } = Immutable;
+
 // ------------------------------------------------------  UTILS
 
 const root = document.getElementById('root');
@@ -94,6 +98,7 @@ let store = {
   previousRover: 'Perseverance',
   currentPhotoIndex: 0,
 };
+// console.log(store);
 
 store.currentRoverData = RoverData(store);
 
