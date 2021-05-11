@@ -8,12 +8,6 @@ const { List, Map, toJS } = Immutable;
 
 const root = document.getElementById('root');
 
-const partial = (fn, arg) => {
-  return (...args) => {
-    return fn(arg, ...args);
-  };
-};
-
 const composeDomEls = (parent, ...children) =>
   reduce(
     children,
@@ -48,7 +42,7 @@ const cardAnimate = (currCard) => {
   }
 };
 
-const handleCardAnimation = () => {
+const triggerCardAnimation = () => {
   const currentCard = document.querySelector('.card');
   if (currentCard) cardAnimate(currentCard);
 };
@@ -66,6 +60,7 @@ const iteratePhotoIndex = (state, direction) => {
   }
   if (i == -1) i = 0;
   state.currentPhotoIndex = i;
+  return state;
 };
 
 const updatePhotoInfo = (state) => {
@@ -112,11 +107,10 @@ const updateRover = async (rover) => {
     .set('currentRover', rover)
     .set('currentPhotoIndex', 0);
 
-  handleCardAnimation();
+  triggerCardAnimation();
 
   const data = await getRoverInfo(rover);
   store = store.set('currentRoverData', RoverData(store).merge(data));
-  console.log('store:', store);
 
   render(root, store);
 };
