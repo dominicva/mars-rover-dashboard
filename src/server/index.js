@@ -160,7 +160,7 @@ app.get('/rover-info/:rover', async (req, res) => {
 
     res.send(data);
   } catch (error) {
-    console.log('Something went wrong fetching rover data', error);
+    console.error('Something went wrong fetching rover data', error);
   }
 });
 
