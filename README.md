@@ -2,7 +2,7 @@
 
 ### Big Picture
 
-- SPA that consumes the NASA API
+- A vanilla JS SPA that consumes the NASA API
 
 - Allows the user to select which rover's information they want to view.
 
@@ -11,8 +11,25 @@
 ### Run on your local machine
 
 1. Get the code
-2. Run `npm install`
-3. Run `npm start` to start local express server at port 3000
+2. You'll need to have node (and npm) installed
+3. Run `npm install`
+4. Run `npm start` to start local express server at port 3000
+
+### Code details
+
+1. The app's state lives in an ImmutableJS Map with variable name `store` in src/public/client.js.
+2. State gets updated whenever the user changes the rover they want to view.
+3. On state change, `render()` gets called
+4. `render()` calls `App()`, which returns an array of the all the app's components.
+5. `render` then reduces these components with `composeDomEls()` as the reducer.
+6. `composeDomEls()` tries to make DOM manipulation feel more functional by wrapping `Element.append()` in `reduce()` with child elements as the reducees and the parent element as the initial accumulator value.
+7. For fun, and again to make things feel more 'functional', I implemented my own simple version of `Array.prototype.reduce()`. See the utils section in src/public/client.js
+
+### What needs work
+
+- There's currently no build step, and so no modules. Before adding more features I'd probably refactor to include this.
+- The current use of ImmutableJS is naive.
+- Everything of course! :)
 
 ### Trello kanban board
 
