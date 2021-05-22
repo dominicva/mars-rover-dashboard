@@ -24,7 +24,7 @@
 5. `render()` calls `App()`, which returns an array of the all the app's components.
 6. `render` then reduces these components with `composeDomEls()` as the reducer.
 7. `composeDomEls()` tries to make DOM manipulation feel more functional by wrapping `Element.append()` in `reduce()` with child elements as the reducees and the parent element as the initial accumulator value.
-8. For fun, and again to make things feel more 'functional', I implemented my own simple version of `Array.prototype.reduce()`. See the utils section in src/public/client.js
+8. For fun, and again to make things feel more 'functional', I implemented my own simple version of `Array.prototype.reduce()` – `reduce()` referenced in 7. See the utils section in src/public/client.js
 9. I included logic on the backend so when rover data gets fetched the http response includes an html string for the new `Card()` component to be rendered.
 
 ### What needs work
